@@ -1,0 +1,147 @@
+/*
+ * responsive-carousel
+ * https://github.com/filamentgroup/responsive-carousel
+ *
+ * Copyright (c) 2012 Filament Group, Inc.
+ * Licensed under the MIT, GPL licenses.
+ */
+.carousel {
+	width: 100%;
+	position: relative;
+	margin: 0 0px 20px 0;
+
+	img {
+		width: 100%;
+	}
+	.carousel-nav {
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+		.prev,.next {
+			display: none;
+		}
+		.carousel-pagination {
+			li {
+				background-color: #313131;
+				width: 16px;
+				text-align: center;
+				margin-right: 5px;
+				a {
+					color: white;
+					font-size: 12px;
+					font-weight: bold;
+					width: 15px;
+					height: 20px;
+				}
+				&:hover {
+					background-color: #F1C817;
+				}
+			}
+			li.carousel-active-page {
+					background-color: #F1C817;
+			}
+
+		}
+	}	
+}
+.carousel .carousel-item {
+	display: none;
+}
+.carousel .carousel-active {
+	display: block;
+	.title {
+		bottom: 60px;
+	    left: 28px;
+	    position: absolute;
+		color: #F1C817;
+	    text-shadow: 2px 2px 1px #000000;
+	    font-size: 16px;
+	    font-weight: bold;		    
+	    z-index: 1;	    
+	}
+	.lead {
+		bottom: 35px;
+	    left: 28px;
+	    position: absolute;
+		color: #FFF;
+	    text-shadow: 2px 2px 1px #000000;
+	    font-size: 12px;
+	    font-weight: bold;
+	    z-index: 1;
+	}
+	.title:hover,.lead:hover {
+		text-decoration: underline;
+	}
+}
+/*.carousel .carousel-nav:nth-child(2) {
+	display: none;
+}*/
+
+/*
+ * responsive-carousel.fade
+ * https://github.com/filamentgroup/responsive-carousel
+ *
+ * Copyright (c) 2012 Filament Group, Inc.
+ * Licensed under the MIT, GPL licenses.
+*/
+.carousel-fade {
+	position: relative;
+	overflow: hidden;
+	-webkit-transform: translate3d(0, 0, 0);
+	-moz-transform: translate3d(0, 0, 0);
+	-ms-transform: translate3d(0, 0, 0);
+	-o-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+}
+.carousel-fade .carousel-item {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%; /* necessary for non-active slides */
+	display: block; /* overrides basic carousel styles */
+	-webkit-transition: opacity .5s ease;
+	-moz-transition: opacity .5s ease;
+	-ms-transition: opacity .5s ease;
+	-o-transition: opacity .5s ease;
+	transition: opacity .5s ease;
+}
+.carousel-fade .carousel-active {
+	position: relative;
+}
+
+.carousel-item {
+	opacity: 0;
+}
+
+.carousel-active {
+	opacity: 1;
+}
+
+.carousel-fade .carousel-out {
+	opacity: 0;
+}
+
+.carousel-fade .carousel-in {
+	opacity: 1;
+}
+
+
+/*
+ * responsive-carousel.pagination
+ * https://github.com/filamentgroup/responsive-carousel
+ *
+ * Copyright (c) 2012 Filament Group, Inc.
+ * Licensed under the MIT, GPL licenses.
+ */
+.carousel-nav-paginated ol {
+ margin: 0 4em;
+ padding: 0;
+}
+.carousel-nav-paginated li,
+.carousel-nav-paginated li a {
+	display: inline-block;
+	position: relative;
+}
+.carousel-nav-paginated .carousel-active-page a {
+	text-decoration: none;
+}

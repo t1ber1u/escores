@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+    <name>cs-personnel-module</name>
+    <displayName>${project.name}</displayName>
+    <description>${project.description}</description>
+    <class>com.nfl.dm.clubsites.cms.PersonnelModule</class>
+    <versionHandler>com.nfl.dm.clubsites.cms.setup.PersonnelModuleVersionHandler</versionHandler>
+    <version>${project.version}</version>
+
+    <components>
+        <id>app-personnel</id>
+    </components>
+
+    <components>
+        <id>app-personnel-browser</id>
+    </components>
+
+    <components>
+        <id>app-personnel-detail</id>
+    </components>
+
+    <dependencies>
+        <dependency>
+            <name>core</name>
+            <version>5.2/*</version>
+        </dependency>
+        <!-- Use the extended-templating-kit with the enterprise edition. -->
+        <!--
+          <dependency>
+            <name>extended-templating-kit</name>
+            <version>1.3/*</version>
+          </dependency>
+        -->
+        <dependency>
+            <name>ui-admincentral</name>
+            <version>5.2/*</version>
+        </dependency>
+
+        <dependency>
+            <name>pages</name>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <name>dam</name>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <name>magnolia</name>
+            <workspaces>
+                <workspace>personnel</workspace>
+            </workspaces>
+            <nodeTypeFile>/mgnl-nodetypes/magnolia-personnel-nodetypes.xml</nodeTypeFile>
+        </repository>
+    </repositories>
+</module>

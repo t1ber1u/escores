@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+    <name>cs-articles-module</name>
+    <displayName>${project.name}</displayName>
+    <description>${project.description}</description>
+    <class>com.nfl.dm.clubsites.cms.ArticleModule</class>
+    <versionHandler>com.nfl.dm.clubsites.cms.setup.ArticleModuleVersionHandler</versionHandler>
+    <version>${project.version}</version>
+
+    <components>
+        <id>app-articles</id>
+    </components>
+
+    <components>
+        <id>app-articles-browser</id>
+    </components>
+
+    <components>
+        <id>app-articles-preview</id>
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.preview.ArticlePreviewSubAppView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.preview.ArticlePreviewSubAppViewImpl</implementation>
+        </component>
+    </components>
+
+    <components>
+        <id>subapp</id>
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.util.ArticleService</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.util.ArticleServiceImpl</implementation>
+        </component>
+    </components>
+
+    <components>
+        <id>subapp</id>
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.navigation.NavigationView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.navigation.NavigationViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.navigation.NavigationPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.navigation.NavigationPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.ArticleEditorSubAppView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.ArticleEditorSubAppViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.layouteditor.LayoutEditorPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.layouteditor.LayoutEditorPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.promote.ArticlePromotionPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.promote.ArticlePromotionPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.promote.ArticlePromotionView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.promote.ArticlePromotionViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.umbrellacontent.UmbrellaContentPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.umbrellacontent.UmbrellaContentPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.umbrellacontent.UmbrellaContentView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.umbrellacontent.UmbrellaContentViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.tagging.TaggingPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.tagging.TaggingPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.tagging.TaggingView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.tagging.TaggingViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.bodyeditor.BodyEditorPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.bodyeditor.BodyEditorPresenter</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.bodyeditor.BodyEditorView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.bodyeditor.BodyEditorViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.layouteditor.LayoutEditorView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.layouteditor.LayoutEditorViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.header.HeaderView</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.header.HeaderViewImpl</implementation>
+        </component>
+
+        <component>
+            <type>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.header.HeaderPresenter</type>
+            <implementation>com.nfl.dm.clubsites.cms.articles.subapp.articleeditor.header.HeaderPresenter</implementation>
+        </component>
+    </components>
+
+    <dependencies>
+        <dependency>
+            <name>core</name>
+            <version>5.2/*</version>
+        </dependency>
+        <!-- Use the extended-templating-kit with the enterprise edition. -->
+        <!--
+          <dependency>
+            <name>extended-templating-kit</name>
+            <version>1.3/*</version>
+          </dependency>
+        -->
+        <dependency>
+            <name>ui-admincentral</name>
+            <version>5.2/*</version>
+        </dependency>
+
+        <dependency>
+            <name>pages</name>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <name>dam</name>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <name>magnolia</name>
+            <workspaces>
+                <workspace>articles</workspace>
+            </workspaces>
+            <nodeTypeFile>/mgnl-nodetypes/magnolia-articles-nodetypes.xml</nodeTypeFile>
+        </repository>
+    </repositories>
+</module>

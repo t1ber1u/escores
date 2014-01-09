@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>cscms</artifactId>
+    <groupId>com.nfl.dm.clubsites.cms</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.nfl.dm.clubsites.cms</groupId>
+  <artifactId>cs-falcons-theme</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>cs-falcons-theme Magnolia STK Theme</name>
+  <!--
+  <description>Please uncomment and fill in ...</description>
+  -->
+  <properties>
+    <magnoliaVersion>5.2.1</magnoliaVersion>
+    <magnoliaSTKVersion>2.7.1</magnoliaSTKVersion>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>info.magnolia</groupId>
+      <artifactId>magnolia-module-standard-templating-kit</artifactId>
+      <version>${magnoliaSTKVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia</groupId>
+      <artifactId>magnolia-core</artifactId>
+      <version>${magnoliaVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>magnolia.public</id>
+      <url>http://nexus.magnolia-cms.com/content/groups/public</url>
+      <snapshots>
+      </snapshots>
+    </repository>
+    <!-- IF YOU NEED MODULES FROM THE ENTERPRISE VERSION, UNCOMMENT THE FOLLOWING REPOSITORY -->
+    <!--
+    <repository>
+      <id>magnolia.enterprise.releases</id>
+      <url>http://nexus.magnolia-cms.com/content/repositories/magnolia.enterprise.releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    -->
+  </repositories>
+  <build>
+    <!-- default resources configuration which will filter the module descriptor -->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/magnolia/*</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+</project>

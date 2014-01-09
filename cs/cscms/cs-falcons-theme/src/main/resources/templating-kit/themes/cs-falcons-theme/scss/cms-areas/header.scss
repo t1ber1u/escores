@@ -1,0 +1,67 @@
+.ads {
+	.ad2 {
+		position: relative;
+		float: right;
+	}
+}
+
+
+nav.top-bar {
+	.name {
+		img {
+			height: 40px;
+			margin-top: -3px;
+			margin-left: 46px;
+		}
+		h1 {
+			display: inline-block;
+			text-transform: uppercase;
+		}
+	}
+	.toggle-topbar.menu-icon {
+		left: 0;
+		right: 0;
+		padding: 0;
+	}
+}
+
+
+header {
+	a.logo {
+		display: block;
+		background: url("/magnoliaAuthor/.resources/img/logo.png") no-repeat;
+		width: 519px;
+		height: 107px;
+	}
+	.player {
+		background: url("/magnoliaAuthor/.resources/img/header_keisel.png") no-repeat;
+		width: 340px;
+		height: 149px;
+	}
+	.shop {
+		/*background: url("/magnoliaAuthor/resources/teemplating-kit/themes/csTheme/img/shopnow.png") no-repeat;
+		width: 141px;
+		height: 120px;
+		*/margin-top: 23px;
+	}
+	.button-bar {
+		background-color: #000;
+		padding-left: 0.825rem;		
+		ul.button-group {
+			li {
+				float:left;
+				margin-right: 0.825rem;
+				a {
+					color: white;
+					text-transform: uppercase; 
+					font-weight: bold;
+
+					&:hover {
+						color: red;
+					}
+				}
+
+			}
+		}
+	}	
+}

@@ -1,0 +1,15 @@
+#do not check in intellig IDEA files
+.idea/
+*.iml
+cscms-webapp/overlays/
+
+#do not check in classes
+target/
+
+#do not check in Eclipse files
+.project
+.classpath
+.settings/
+
+#do not check in local env property files
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:annotation-config/>
+
+  <context:component-scan base-package="com.nfl.dm.clubsites.cms" use-default-filters="false">
+    <context:include-filter type="annotation" expression="info.magnolia.module.blossom.annotation.Template"/>
+    <context:include-filter type="annotation" expression="info.magnolia.module.blossom.annotation.Area"/>
+    <context:include-filter type="annotation" expression="info.magnolia.module.blossom.annotation.DialogFactory"/>
+    <context:include-filter type="annotation" expression="info.magnolia.module.blossom.annotation.VirtualURIMapper"/>
+  </context:component-scan>
+
+  <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="customArgumentResolver">
+      <bean class="info.magnolia.module.blossom.web.BlossomWebArgumentResolver" />
+    </property>
+  </bean>
+  <bean class="info.magnolia.module.blossom.preexecution.BlossomHandlerMapping">
+    <property name="targetHandlerMappings">
+      <list>
+        <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+          <property name="useDefaultSuffixPattern" value="false" />
+        </bean>
+        <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+      </list>
+    </property>
+  </bean>
+  <bean class="info.magnolia.module.blossom.view.UuidRedirectViewResolver">
+    <property name="order" value="1" />
+  </bean>
+
+  <!-- JSP - renders all views that end with .jsp -->
+  <bean class="info.magnolia.module.blossom.view.TemplateViewResolver">
+    <property name="order" value="2"/>
+    <property name="prefix" value="/templates/cs-blossom-module/"/>
+    <property name="viewNames" value="*.jsp"/>
+    <property name="viewRenderer">
+      <bean class="info.magnolia.module.blossom.view.JspTemplateViewRenderer"/>
+    </property>
+  </bean>
+
+  <!-- Freemarker - renders all views that end with .ftl -->
+  <bean class="info.magnolia.module.blossom.view.TemplateViewResolver">
+    <property name="order" value="3"/>
+    <property name="prefix" value="/cs-blossom-module/templates/"/>
+    <property name="viewNames" value="*.ftl"/>
+    <property name="viewRenderer">
+      <bean class="info.magnolia.module.blossom.view.FreemarkerTemplateViewRenderer">
+        <property name="contextAttributes">
+          <map>
+            <entry key="cms">
+              <bean class="info.magnolia.rendering.renderer.ContextAttributeConfiguration">
+                <property name="name" value="cms"/>
+                <property name="componentClass" value="info.magnolia.templating.freemarker.Directives"/>
+              </bean>
+            </entry>
+            <entry key="cmsfn">
+              <bean class="info.magnolia.rendering.renderer.ContextAttributeConfiguration">
+                <property name="name" value="cmsfn"/>
+                <property name="componentClass" value="info.magnolia.templating.functions.TemplatingFunctions"/>
+              </bean>
+            </entry>
+          </map>
+        </property>
+      </bean>
+    </property>
+  </bean>
+</beans>

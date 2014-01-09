@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+    <name>nfl-poc</name>
+    <displayName>${project.name}</displayName>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+
+    <!-- Components App definition. -->
+    <!-- id of the components should be app-'appname'. 'appname' is the name of the app configured
+         in the apps configuration repository of the admincentral. (config/module/apps/appname/name:appname) -->
+    <components>
+        <id>app-nflEditor</id>
+    </components>
+
+    <components>
+        <id>app-nflEditor-main</id>
+        <component>
+            <type>com.nfl.poc.editor.app.NFLEditorMainSubApp</type>
+            <implementation>com.nfl.poc.editor.app.NFLEditorMainSubApp</implementation>
+        </component>
+        <component>
+            <type>com.nfl.poc.editor.app.NFLEditorPresenter</type>
+            <implementation>com.nfl.poc.editor.app.NFLEditorPresenter</implementation>
+        </component>
+        <component>
+            <type>com.nfl.poc.editor.app.NFLEditorView</type>
+            <implementation>com.nfl.poc.editor.app.NFLEditorViewImpl</implementation>
+        </component>
+    </components>
+
+    <dependencies>
+        <dependency>
+            <name>ui-admincentral</name>
+            <version>5.2/*</version>
+        </dependency>
+    </dependencies>
+
+    <servlets>
+        <servlet>
+            <name>NFLEditorServlet</name>
+            <class>com.nfl.poc.editor.servlet.NFLEditorServlet</class>
+            <mappings>
+                <mapping>/.magnolia/nfl-editor/*</mapping>
+                <mapping>/.magnolia/nfl-editor</mapping>
+            </mappings>
+        </servlet>
+    </servlets>
+
+    <repositories>
+        <repository>
+            <name>magnolia</name>
+            <workspaces>
+                <workspace>mediagallery</workspace>
+            </workspaces>
+            <nodeTypeFile>/mgnl-nodetypes/magnolia-mediagallery-nodetypes.xml</nodeTypeFile>
+        </repository>
+    </repositories>
+</module>

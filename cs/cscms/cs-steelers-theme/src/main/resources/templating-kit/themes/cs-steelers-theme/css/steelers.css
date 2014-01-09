@@ -1,0 +1,65 @@
+/* 
+steelers.scss
+
+contains all includes for SCSS files, and should be
+the only SCSS file compiled.
+
+Output should be ../css/steelers.css
+
+*/
+/* Area Imports */
+.ads .ad2 {
+  position: relative;
+  float: right; }
+
+nav.top-bar .name img {
+  height: 40px;
+  margin-top: -3px;
+  margin-left: 46px; }
+nav.top-bar .name h1 {
+  display: inline-block;
+  text-transform: uppercase; }
+nav.top-bar .toggle-topbar.menu-icon {
+  left: 0;
+  right: 0;
+  padding: 0; }
+
+header a.logo {
+  display: block;
+  background: url("/magnoliaAuthor/.resources/img/logo.png") no-repeat;
+  width: 519px;
+  height: 107px; }
+header .player {
+  background: url("/magnoliaAuthor/.resources/img/header_keisel.png") no-repeat;
+  width: 340px;
+  height: 149px; }
+header .shop {
+  /*background: url("/magnoliaAuthor/resources/teemplating-kit/themes/csTheme/img/shopnow.png") no-repeat;
+  width: 141px;
+  height: 120px;
+  */
+  margin-top: 23px; }
+header .button-bar {
+  background-color: #000;
+  padding-left: 0.825rem; }
+  header .button-bar ul.button-group li {
+    float: left;
+    margin-right: 0.825rem; }
+    header .button-bar ul.button-group li a {
+      color: white;
+      text-transform: uppercase;
+      font-weight: bold; }
+      header .button-bar ul.button-group li a:hover {
+        color: red; }
+
+.footer {
+  background-color: black;
+  padding: 20px 0; }
+  .footer .links a {
+    color: white; }
+  .footer .links a:hover {
+    color: yellow;
+    text-decoration: underline; }
+  .footer .copyright {
+    color: gray;
+    font-size: 12px; }

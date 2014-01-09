@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="license" xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>mgnl:contentNode</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+    <sv:value>mix:lockable</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>cf19a87f-8804-48ff-aa52-89eaebbbb0de</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:createdBy" sv:type="String">
+    <sv:value>admin</sv:value>
+  </sv:property>
+  <sv:property sv:name="key" sv:type="String">
+    <sv:value>LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEJDUEcgdjEuNDYKCm93SjRuSnZBeTh6RXhMaDQ4eU9HcFluL3RSbFByMHZpemszUHk4bkpURTdOSzA0TldwR3dXRmRYSVNlenVDUXoKTDEyaG9DaS9JTFdvSkRPMVdFRlhseXUvUEMrMXlMWW9QejIxU0s4cXY5UWhMeTFITHprL2w2c3N0YWc0TXordgoyRGJhVk05QXowREhERVJHYzZWV0ZHUVdKWllBWld5TkRBeE5kQTBNZFkwTnVYTHpVMHB6VW90dFUvTktVb3NLCmlqS0xVN2xTVXpKTHdQb1JZcnBBbTlOU2kwSEdKdWJvSUtudG1NUEN4TWpFd01iS0JISXFBeGVuQU13ckQ1U1oKLy9COUtmaTZwR1JyZlBydnR5WjdzL2QrS3F6ODRaUjZhdmNPaFMzbE5zcnZWMXplME5hVGI5TEhybW9idGFENgpldVFhbnNLeUxMV0g4aDNuLzVTZHZQTHNvN2xCVDFPWGJvcUU4SS90WVhxUmZSNFBVdDU1bFY3S3VqeDk0ZVFQCnJncVA4aW9xL3R3cEtLOXRtVno5aXM4MTY5R01mcTJjenNYOU45bTBNNjJVMjJydTEzenNCZ0QvbVpIcgo9YmhqRgotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0tCg==</sv:value>
+  </sv:property>
+  <sv:property sv:name="mgnl:created" sv:type="Date">
+    <sv:value>2007-11-22T11:39:06.211+01:00</sv:value>
+  </sv:property>
+  <sv:property sv:name="mgnl:lastModified" sv:type="Date">
+    <sv:value>2013-12-03T10:18:35.814-08:00</sv:value>
+  </sv:property>
+  <sv:property sv:name="mgnl:lastModifiedBy" sv:type="String">
+    <sv:value>superuser</sv:value>
+  </sv:property>
+  <sv:property sv:name="owner" sv:type="String">
+    <sv:value>roger.zou@nfl.com</sv:value>
+  </sv:property>
+</sv:node>

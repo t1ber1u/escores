@@ -1,0 +1,10 @@
+
+<!-- TODO: insert this into the context.xml and delete this file.  -->
+
+
+<!-- TODO: replace author_cluster_id and public_cluster_id with the actual id literal per env. -->
+<Environment name="nfl.author.cluster.id" value="author_cluster_id"
+             type="java.lang.String" override="false"/>
+
+<Environment name="nfl.public.cluster.id" value="public_cluster_id"
+             type="java.lang.String" override="false"/>

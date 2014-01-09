@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+  <name>theme-cs-base-theme</name>
+  <displayName>${project.name}</displayName>
+  <description>${project.description}</description>
+  <versionHandler>info.magnolia.module.templatingkit.setup.ThemeVersionHandler</versionHandler>
+  <version>${project.version}</version>
+  <properties>
+    <property>
+        <name>themeName</name>
+        <value>cs-base-theme</value>
+    </property>
+  </properties>
+  <dependencies>
+    <dependency>
+      <name>standard-templating-kit</name>
+      <version>2.7.1/*</version>
+    </dependency>
+  </dependencies>
+</module>

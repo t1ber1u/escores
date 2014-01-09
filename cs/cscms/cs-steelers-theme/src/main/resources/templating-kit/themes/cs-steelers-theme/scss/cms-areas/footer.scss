@@ -1,0 +1,19 @@
+.footer {
+	background-color: black;
+	padding: 20px 0;
+	.logo {
+	}
+	.links {
+		a {
+			color: white;
+		}
+		a:hover {
+			color: yellow;
+			text-decoration: underline;
+		}
+	}	
+	.copyright {
+		color: gray;
+		font-size: 12px;
+	}
+}

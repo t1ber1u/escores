@@ -1,0 +1,13 @@
+/* 
+steelers.scss
+
+contains all includes for SCSS files, and should be
+the only SCSS file compiled.
+
+Output should be ../css/steelers.css
+
+*/
+
+/* Area Imports */
+
+@import "cms-areas/header", "cms-areas/footer";

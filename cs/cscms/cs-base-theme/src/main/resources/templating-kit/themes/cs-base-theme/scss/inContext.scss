@@ -1,0 +1,88 @@
+ /* CSS for inContext.js */
+
+.editModeMenu {
+	position: fixed;
+	top: 15px;
+	left: 15px;
+	height: 110px;
+	width: 135px;
+	background-color: rgba(119, 119, 119, 0.64);
+	padding: 10px;
+
+
+	.hide {
+			display: none;
+		}
+
+	.enableEditMode {
+		background-color: orange;
+		&:hover {
+			background-color: rgb(255, 180, 44);
+		}
+
+		.hide {
+			display: none;
+		}
+	}
+
+	.editModeCancelButton {
+		padding: 12px 46px;
+		margin-bottom: 10px;
+		background-color: red;
+
+		&:hover {
+			background-color: rgb(255, 98, 98);
+		}
+
+		.hide {
+			display: none;
+		}
+	}
+
+	.editModeSaveButton {
+		padding: 12px 43px;
+		background-color: rgba(0, 128, 0, 0.47);
+
+		&:hover {
+			background-color: rgba(0, 175, 0, 1)
+		}
+
+		.hide {
+			display: none;
+		}
+	}
+
+	&:hover {
+		background-color: gray;
+	}
+}
+
+.inContextToolbar {
+	position: fixed;
+	top:20px;
+	left: 20px;
+	height: 100px;
+	// width: 220px; 
+	background-color: rgba(119, 119, 119, 0.64);
+	padding: 7px;
+	z-index: 11999;
+
+	.hide {
+		display: none !important;
+	}
+
+	.button {
+		// margin-right: 10px;
+		display: block;
+	}
+
+	.save {
+		background-color: green;
+	}
+
+	.cancel {
+		background-color: red;
+	}
+}
+
+/* End of inContext.js CSS */

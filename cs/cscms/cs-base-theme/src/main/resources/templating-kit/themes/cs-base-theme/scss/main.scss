@@ -1,0 +1,21 @@
+/* 
+main.scss
+
+contains all includes for SCSS files, and should be
+the only SCSS file compiled.
+
+Output should be ../css/main.css
+
+*/
+
+/* Library imports */
+@import "foundation", "h5bp-main", "normalize", "inContext", "global";
+
+/* Area Imports */
+
+@import "cms-areas/footer", "cms-areas/header";
+
+
+/* Component imports */
+
+@import "cms-components/article", "cms-components/centerpiece", "cms-components/sitealert";

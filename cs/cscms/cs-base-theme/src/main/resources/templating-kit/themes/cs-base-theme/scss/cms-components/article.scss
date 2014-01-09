@@ -1,0 +1,40 @@
+ /* Article component */
+
+.component{
+
+	.article {
+
+		// img {
+
+		// 	&.left-top {
+		// 		float: left;
+		// 		max-height: 240px;
+		// 		padding: 10px 10px 0 0;
+		// 	}
+		// }
+
+		.byline-container {
+
+			.byline-img {
+				// max-height: 240px;
+				float: left;
+				// padding: 10px 10px 0 0;
+				img {
+
+				}
+			}
+		}
+
+		.top-image-container {
+			margin: 0 auto;
+		}
+
+		.article-body {
+			padding: 10px;
+			background-color: white;
+			position: relative;
+		}
+	}
+}
+
+/* End Article component */

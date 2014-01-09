@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.nfl.dm.clubsites.cms</groupId>
+        <artifactId>cscms</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>cscms-webapp</artifactId>
+    <name>cscms: webapp</name>
+    <packaging>war</packaging>
+    <dependencies>
+        <!-- Add your project specific dependencies here: -->
+
+        <!-- Overlay Magnolia Empty Webapp. Alternatively, use the bundled-webapp or the enterprise-webapp. Dependencies versions are already imported by parent, so no need to replicate here. -->
+        <dependency>
+            <groupId>info.magnolia.eebundle</groupId>
+            <artifactId>magnolia-enterprise-webapp</artifactId>
+            <version>${magnoliaVersion}</version>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>info.magnolia</groupId>
+                    <artifactId>magnolia-demo-project</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>info.magnolia.rest</groupId>
+            <artifactId>magnolia-rest-tools</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-blossom-module</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-articles-module</artifactId>
+            <version>1.0.21</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-authors-module</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-personnel-module</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.poc</groupId>
+            <artifactId>nfl-poc-app</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-base-theme</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-steelers-theme</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nfl.dm.clubsites.cms</groupId>
+            <artifactId>cs-falcons-theme</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- exclude jars copied "physically" from the webapp overlay - so we only get those resolved by Maven's dependency management -->
+                    <dependentWarExcludes>WEB-INF/lib/*.jar</dependentWarExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+</project>

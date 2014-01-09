@@ -1,0 +1,262 @@
+/* SCSS file for wireframe */
+
+.full-screen-modal {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(30,30,30, 0.8);
+	z-index: 999;
+
+	.modal-content {
+		position: relative;
+		top: 100px;
+		width: 100%;
+		height: 600px;
+		background-color: white;
+
+		.modal-side {
+			position: relative;
+			margin: 0 auto;
+		}
+
+		.modal-left-side {
+			width: 80%;
+			top: 200px;
+			
+			.existing-article-edit-btn-wrapper {
+				width: 55px;
+				margin: 10px auto;
+
+				.existing-article-edit-btn {
+					
+				}	
+			}
+		}
+
+		.modal-right-side {
+			top: 220px;
+
+			.new-article-btn-wrapper {
+				width: 200px;
+				margin: 15px auto;
+			}
+		}
+
+		.center-col {
+			width: 100%;
+			.center-col-or {
+				text-align: center;
+				position: relative;
+				top: 250px;	
+			}
+		}
+		.modal-side-text {
+			width: 100%;
+			text-align: center;
+			font-size: 24px;
+			padding-bottom: 20px;
+		}
+	}
+}
+/* Sidebar */
+
+#sidebar-wrapper {
+	.sidebar-nav {
+		float: left;
+		.sidebar-mode-selector {
+			cursor: pointer;
+			min-height: 60px;
+			color: #999999;
+			transition: all .4s;
+
+			&:hover {
+				background-color: #333333;
+				color: white;
+			}
+
+			&.expanded {
+				background-color: #222222;
+				color: white;
+				transition: all .4s;
+			}
+
+			.selectorTitle {
+				margin-top: 0 !important;
+				margin-bottom: 0 !important;
+				padding: 20px 0 0 20px;
+			}
+
+			.internal {
+				transition: all .4s;
+
+				.form-group {
+					margin: 20px;
+				}
+			}
+		}
+	}
+
+	.sidebar2 {
+		float: right;
+		height: 100%;
+		background-color: #222222;
+		transition: width .4s;
+		color: white;
+	}
+}
+
+/* End Sidebar */
+
+#page-content-wrapper {
+	.content-header {
+
+	}
+
+	.page-content {
+
+		.testing {
+			border: solid black 2px;
+		}
+	}
+}
+
+.main-container {
+	padding-top: 40px;
+
+
+	.mode-selection-container {
+
+		.mode-selection {
+			height: 600px;
+			border-radius: 6px;
+			
+			.mode-selector {
+				padding: 10px;
+				margin: 10px;
+				border: solid white 1px;
+				border-radius: 6px;
+				cursor: pointer;
+				transition: all .4s;
+				height: 55px;
+				.mode-selector-button {
+					padding: 10px;
+				}
+
+				&.expanded {
+					height: 300px;
+
+				}
+			}
+		}
+	}
+
+	.mode-workspace {
+		height: 600px;
+		border-radius: 6px;
+	}
+}
+
+/* Sidebar 2*/
+
+.sidebar2-container {
+	padding: 30px;
+	text-align: center;
+}
+
+/* End Sidebar 2*/
+
+/* Image Editor Workspace template */
+
+#file_drop_zone {
+	height: 500px;
+	border: dashed gray 5px;
+	border-radius: 20px;
+
+
+	.file-drop-zone-text-area {
+		position: relative;
+		top: 180px;
+		text-align: center;
+	}
+}
+
+.testDropZone {
+	border: solid green 3px;
+	height: 100px;
+	width: 400px;
+	background-color: gray;
+}
+
+.borderBlack {
+	border: dashed black 5px !important;
+}
+
+#image-editor-container {
+	margin: 10px;
+
+	.image-editor-sidebar-container {
+		height: 500px;
+
+		.image-editor-sidebar {
+			border: solid black 2px;
+			height: 100%;
+			border-radius: 10px;
+		}
+	}
+	
+	.image-editor-canvas-container {
+		border: solid black 2px;
+		border-radius: 10px;
+		height: 500px;
+		overflow: auto;
+
+		#image-editor-canvas {
+			border: solid green 1px;
+		}
+	}
+
+}
+
+#hidden-file-input {
+	position: fixed;
+	top: -1000px;
+}
+/* End Image Editor Workspace template */
+
+/* Photo Gallery Workspace template */
+
+.media-gallery-selector-menu {
+	width: 30%;
+	min-width: 63px;
+	position: relative;
+	left: 70%;
+	background-color: black;
+
+	.sidebar-menu-container {
+
+		.sidebar-menu {
+			padding: 10px 0 10px 10px;
+			.sidebar-menu-tab {
+				height: 40px;
+				text-align: center;
+				transition: all .4s;
+				font-size: 30px;
+
+				&:hover {
+					background-color: gray;
+					color: black;
+				}
+
+
+
+				.tab-name {
+
+				}
+			}
+		}
+	}
+}
+
+/* End Photo Gallery Workspace template */
+
+/* end wireframe SCSS file */

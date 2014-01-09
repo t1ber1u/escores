@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+    <meta charset="utf-8"></meta>
+    <title>NFL Clubsites</title>
+    <meta name="description" content=""></meta>
+    <meta name="author" content="NFL Digital Media"></meta>
+
+    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no">
+
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta name="ctxPath" content="${contextPath}"/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="${contextPath}/.resources/nflLoginForm/css/reset.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${contextPath}/.resources/nflLoginForm/css/login.css" />
+    <link rel="stylesheet" type="text/css" href="${contextPath}/.resources/nflLoginForm/css/fonts.css" />
+
+    <link rel="shortcut icon" type="image/ico" href="${contextPath}/.resources/nflLoginForm/img/favicon.ico" />
+</head>
+<body>
+[#assign loginError = (ctx.mgnlLoginError.status == 2)]
+<div id="content" style="top: 60px;">
+    <div id="login" class="login-panel" style="display: block; opacity: 1; -webkit-transition: all 0s cubic-bezier(0.25, 0.1, 0.25, 1);" >
+        <div class="header">
+            <div class="tag-line">
+            </div>
+        </div>
+            
+        <form id="loginForm" action="" method="post" class="mgnl-form">
+            <div id="login-divet" class="divet"></div>
+            <div style="height:28px;"></div>
+            <label for="login-username">user name</label>
+            <input type="text" value="" id="login-username" name="mgnlUserId" [#if loginError] class ="error"[/#if] tabindex="1" [#if !loginError] autofocus [/#if] autocorrect="off" autocapitalize="off">
+            <br class="float-clear"/>
+            <label for="login-password">password</label>
+            <input type="password" id="login-password" value="" name="mgnlUserPSWD" tabindex="2" [#if loginError] class ="error"[/#if]><br class="float-clear"/>
+            <div>
+                <button class="btn-submit" id="login-button" style="float:right;" tabindex="3">login</button>
+            </div>
+            <br class="float-clear" />
+        </form>
+        [#if loginError]
+        <script type="text/javascript">
+            document.getElementById('login-username').focus();
+        </script>
+        <div id="error-divet" class="divet"></div>
+        <div id="error-message">
+            <div class="icon-error"><img src="${contextPath}/.resources/nflLoginForm/img/icon-error-white.png"/></div>
+            <span>${errorString!}</span>
+        </div>
+        [/#if]
+    </div>
+
+    <script type="text/javascript">
+        document.ontouchmove = function(e){ e.preventDefault(); }
+        var username = document.getElementById('login-username')
+        var password = document.getElementById('login-password')
+        function removeErrorClass() { this.removeAttribute('class')}
+        //username.onfocus = function(e){ e.preventDefault(); }
+        username.onblur = removeErrorClass
+        password.onblur = removeErrorClass
+    </script>
+</div>
+</body>
+</html>

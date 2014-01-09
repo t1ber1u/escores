@@ -1,0 +1,14 @@
+<!-- TODO: Add this to the end of jackrabbit-bundle-mysql-search.xml and then delete this file.
+        Also, add the equivalent to the Public version.
+        This has not been fully vetted, needs a bit of integration testing to verify.  -->
+
+
+<Cluster id="java:comp/env/nfl.author.cluster.id" syncDelay="5000">
+    <Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
+        <param name="revision" value="${rep.home}/revision.log" />
+        <param name="driver" value="javax.naming.InitialContext"/>
+        <param name="url" value="java:comp/env/jdbc/magnoliaAuthorDS"/>
+        <param name="schemaObjectPrefix" value="journal_"/>
+        <param name="databaseType" value="mysql"/>
+    </Journal>
+</Cluster>

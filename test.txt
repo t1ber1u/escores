@@ -1,113 +1,66 @@
-npm install axios adm-zip
-npm install --save-dev @types/node @types/adm-zip
+e2e
+├── .tmp
+├── logs
+├── node_modules
+├── scripts
+│   ├── identify_chrome_version.js
+│   └── identify_chrome_version.ts
+├── src
+│   ├── features
+│   ├── pages
+│   ├── steps
+│   └── support
+├── types
+│   └── adm-zip.d.ts
+├── package-lock.json
+├── package.json
+├── tsconfig.json
+├── tsconfig.scripts.json
+├── tsconfig.tests.json
+├── wdio.conf.gitlab.ts
+├── wdio.conf.ts
+└── yarn.lock
 
-scripts/identify_chrome_version.ts)
 
-import { execSync } from 'child_process';
-import axios from 'axios';
-import * as AdmZip from 'adm-zip';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+Placement of tsconfig.scripts.json and tsconfig.tests.json
 
-function getChromeVersion(): string {
-  let chromeVersion = '';
+Both tsconfig.scripts.json and tsconfig.tests.json should be placed in the root directory:
 
-  switch (os.platform()) {
-    case 'darwin': // macOS
-      chromeVersion = execSync('/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version')
-        .toString()
-        .match(/(\d+\.\d+\.\d+\.\d+)/)?.[0] || '';
-      break;
+	•	tsconfig.scripts.json: Specific to the scripts folder.
+	•	tsconfig.tests.json: Specific to the tests in the src folder and the WebDriverIO configurations.
 
-    case 'win32': // Windows
-      try {
-        const chromePath = fs.existsSync('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe') 
-          ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' 
-          : 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe';
-        chromeVersion = execSync(`"${chromePath}" --version`)
-          .toString()
-          .replace('Google Chrome ', '')
-          .trim();
-      } catch (err) {
-        console.error('Error detecting Chrome version on Windows:', err);
-      }
-      break;
+Steps to Create and Use the Files
 
-    case 'linux': // Linux
-      chromeVersion = execSync('google-chrome --version')
-        .toString()
-        .match(/(\d+\.\d+\.\d+\.\d+)/)?.[0] || '';
-      break;
+	1.	Create tsconfig.scripts.json:
+Place this file in the root directory:
 
-    default:
-      console.error('Unsupported OS:', os.platform());
-      break;
-  }
-
-  return chromeVersion;
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["scripts/**/*"]
 }
+------------------
+tsconfig.tests.json
 
-async function downloadChromeDriver(version: string): Promise<void> {
-  const driverVersionUrl = `https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${version}`;
-  const response = await axios.get(driverVersionUrl);
-  const driverVersion = response.data;
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node", "@wdio/globals/types", "expect-webdriverio", "@wdio/cucumber-framework"]
+  },
+  "include": ["src/**/*", "wdio.conf.ts", "wdio.conf.gitlab.ts"]
+}-------------------
 
-  console.log(`ChromeDriver version: ${driverVersion}`);
+package.json
 
-  const platform = os.platform();
-  let driverUrl = '';
-
-  if (platform === 'win32') {
-    driverUrl = `https://chromedriver.storage.googleapis.com/${driverVersion}/chromedriver_win32.zip`;
-  } else if (platform === 'linux') {
-    driverUrl = `https://chromedriver.storage.googleapis.com/${driverVersion}/chromedriver_linux64.zip`;
-  } else if (platform === 'darwin') {
-    driverUrl = `https://chromedriver.storage.googleapis.com/${driverVersion}/chromedriver_mac64.zip`;
-  }
-
-  const responseDriver = await axios({
-    url: driverUrl,
-    method: 'GET',
-    responseType: 'arraybuffer'
-  });
-
-  const zip = new AdmZip(responseDriver.data);
-  const outputPath = path.join(__dirname, 'chromedriver');
-  zip.extractAllTo(outputPath, true);
-
-  console.log('ChromeDriver has been downloaded and extracted.');
-}
-
-async function main() {
-  try {
-    const chromeVersion = getChromeVersion();
-    if (chromeVersion) {
-      console.log(`Chrome version: ${chromeVersion}`);
-      await downloadChromeDriver(chromeVersion);
-    } else {
-      console.error('Could not determine Chrome version.');
-    }
-  } catch (err) {
-    console.error('An error occurred:', err);
-  }
-}
-
-main();
-
------------------------
-Step-by-Step Integration:
-
-	1.	Add the Pre-Test Script: Modify your TypeScript script to place it in a directory like scripts. Ensure the script runs before your test suite starts.
-	2.	Update package.json: Add a script to compile and run the TypeScript script before your tests.
---------
 {
   "name": "webdriverio-cucumber",
   "version": "1.0.0",
   "description": "Project to run WebdriverIO tests with Cucumber",
   "scripts": {
-    "pretest": "tsc scripts/identify_chrome_version.ts && node scripts/identify_chrome_version.js",
-    "test": "wdio run wdio.conf.ts",
+    "pretest": "tsc -p tsconfig.scripts.json && node scripts/identify_chrome_version.js",
+    "test": "tsc -p tsconfig.tests.json && wdio run wdio.conf.ts",
     "wdio:local": "wdio run wdio.conf.ts",
     "wdio:gitlab": "wdio run wdio.conf.gitlab.ts"
   },

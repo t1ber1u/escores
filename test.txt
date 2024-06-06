@@ -24,6 +24,9 @@ const isWindows = process.platform === 'win32';
 const chromeBinary = isWindows ? 'chrome.exe' : path.join('Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
 const chromeDriverBinary = isWindows ? 'chromedriver.exe' : 'chromedriver';
 
+console.log('Resolved Chrome path:', path.join(chromePath, chromeBinary));
+console.log('Resolved ChromeDriver path:', path.join(chromeDriverPath, chromeDriverBinary));
+
 export const config: Config = {
     runner: 'local',
     specs: [

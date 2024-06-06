@@ -14,11 +14,14 @@ function resolveDynamicPath(basePath: string, pattern: string): string {
     return directories[0];
 }
 
-const chromePath = resolveDynamicPath(path.resolve(__dirname, './chrome'), 'mac_arm');
-const chromeDriverPath = resolveDynamicPath(path.resolve(__dirname, './chromedriver'), 'mac_arm');
+const chromeBasePath = path.resolve(__dirname, './chrome');
+const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
+
+const chromePath = resolveDynamicPath(chromeBasePath, 'mac_arm');
+const chromeDriverPath = resolveDynamicPath(chromeDriverBasePath, 'mac_arm');
 
 const isWindows = process.platform === 'win32';
-const chromeBinary = isWindows ? 'chrome.exe' : 'chrome';
+const chromeBinary = isWindows ? 'chrome.exe' : path.join('Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
 const chromeDriverBinary = isWindows ? 'chromedriver.exe' : 'chromedriver';
 
 export const config: Config = {
@@ -31,7 +34,7 @@ export const config: Config = {
         maxInstances: 1,
         browserName: 'chrome',
         'goog:chromeOptions': {
-            binary: path.join(chromePath, `chrome-mac-arm64`, chromeBinary),
+            binary: path.join(chromePath, chromeBinary),
         },
     }],
     logLevel: 'info',
@@ -42,7 +45,7 @@ export const config: Config = {
     connectionRetryCount: 3,
     services: [
         ['chromedriver', {
-            chromedriverCustomPath: path.join(chromeDriverPath, `chromedriver-mac-arm64`, chromeDriverBinary),
+            chromedriverCustomPath: path.join(chromeDriverPath, chromeDriverBinary),
         }]
     ],
     framework: 'mocha',

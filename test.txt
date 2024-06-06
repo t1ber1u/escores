@@ -55,5 +55,6 @@ export const config: Config = {
         timeout: 60000
     }
 };
-chmod +x ./chrome/mac_arm-115.0.5790.170/chrome-mac-arm64/Google\ Chrome\ for\ Testing.app/Contents/MacOS/Google\ Chrome\ for\ Testing
-chmod +x ./chromedriver/mac_arm-115.0.5790.170/chromedriver-mac-arm64/chromedriver
+ls ./chrome/mac_arm-115.0.5790.170/chrome-mac-arm64/Google\ Chrome\ for\ Testing.app/Contents/MacOS/Google\ Chrome\ for\ Testing
+ls ./chromedriver/mac_arm-115.0.5790.170/chromedriver-mac-arm64/chromedriver
+

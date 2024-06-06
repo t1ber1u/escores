@@ -15,10 +15,9 @@ function resolveDynamicPath(basePath: string, pattern: string): string {
 }
 
 const chromeBasePath = path.resolve(__dirname, './chrome');
-const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
+const chromeDriverPath = path.resolve(__dirname, './chromedriver');
 
 const chromePath = resolveDynamicPath(chromeBasePath, 'mac_arm');
-const chromeDriverPath = resolveDynamicPath(chromeDriverBasePath, 'mac_arm');
 
 const isWindows = process.platform === 'win32';
 const chromeBinary = isWindows ? 'chrome.exe' : path.join('Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');

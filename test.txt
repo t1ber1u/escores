@@ -1,100 +1,54 @@
-e2e
-├── .tmp
-├── logs
-├── node_modules
-├── scripts
-│   ├── identify_chrome_version.js
-│   └── identify_chrome_version.ts
-├── src
-│   ├── features
-│   ├── pages
-│   ├── steps
-│   └── support
-├── types
-│   └── adm-zip.d.ts
-├── package-lock.json
-├── package.json
-├── tsconfig.json
-├── tsconfig.scripts.json
-├── tsconfig.tests.json
-├── wdio.conf.gitlab.ts
-├── wdio.conf.ts
-└── yarn.lock
+import { Config } from '@wdio/sync';
+import path from 'path';
+import fs from 'fs';
 
+function resolveDynamicPath(basePath: string, pattern: string): string {
+    const directories = fs.readdirSync(basePath, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
+        .map(dirent => path.join(basePath, dirent.name));
 
-Placement of tsconfig.scripts.json and tsconfig.tests.json
+    if (directories.length !== 1) {
+        throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
+    }
 
-Both tsconfig.scripts.json and tsconfig.tests.json should be placed in the root directory:
-
-	•	tsconfig.scripts.json: Specific to the scripts folder.
-	•	tsconfig.tests.json: Specific to the tests in the src folder and the WebDriverIO configurations.
-
-Steps to Create and Use the Files
-
-	1.	Create tsconfig.scripts.json:
-Place this file in the root directory:
-
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["node"]
-  },
-  "include": ["scripts/**/*"]
+    return directories[0];
 }
-------------------
-tsconfig.tests.json
 
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest", "node", "@wdio/globals/types", "expect-webdriverio", "@wdio/cucumber-framework"]
-  },
-  "include": ["src/**/*", "wdio.conf.ts", "wdio.conf.gitlab.ts"]
-}-------------------
+const chromePath = resolveDynamicPath(path.resolve(__dirname, './chrome'), 'mac_arm');
+const chromeDriverPath = resolveDynamicPath(path.resolve(__dirname, './chromedriver'), 'mac_arm');
 
-package.json
+const isWindows = process.platform === 'win32';
+const chromeBinary = isWindows ? 'chrome.exe' : 'chrome';
+const chromeDriverBinary = isWindows ? 'chromedriver.exe' : 'chromedriver';
 
-{
-  "name": "webdriverio-cucumber",
-  "version": "1.0.0",
-  "description": "Project to run WebdriverIO tests with Cucumber",
-  "scripts": {
-    "pretest": "tsc -p tsconfig.scripts.json && node scripts/identify_chrome_version.js",
-    "test": "tsc -p tsconfig.tests.json && wdio run wdio.conf.ts",
-    "wdio:local": "wdio run wdio.conf.ts",
-    "wdio:gitlab": "wdio run wdio.conf.gitlab.ts"
-  },
-  "devDependencies": {
-    "@testing-library/webdriverio": "^3.2.1",
-    "@types/fs-extra": "^11.0.4",
-    "@types/jest": "^29.5.1",
-    "@typescript-eslint/eslint-plugin": "^6.1.1",
-    "@typescript-eslint/parser": "^6.1.1",
-    "@wdio/browser-runner": "^8.32.2",
-    "@wdio/cli": "^8.32.2",
-    "@wdio/cucumber-framework": "^8.32.2",
-    "@wdio/globals": "^8.32.2",
-    "@wdio/local-runner": "^8.32.2",
-    "@wdio/spec-reporter": "^8.32.2",
-    "@wdio/types": "^8.32.2",
-    "eslint": "^8.56.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.28.0",
-    "eslint-plugin-wdio": "^8.24.12",
-    "fs-extra": "^11.1.0",
-    "jest": "^29.7.0",
-    "jest-circus": "^29.7.0",
-    "multiple-cucumber-html-reporter": "^3.6.1",
-    "npm-run-all": "^4.1.5",
-    "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.2",
-    "webdriverio": "^8.32.2",
-    "chromedriver": "^112.0.0",
-    "adm-zip": "^0.5.9",
-    "axios": "^1.4.0"
-  },
-  "resolutions": {
-    "ejs": "^3.1.10"
-  }
-}
+export const config: Config = {
+    runner: 'local',
+    specs: [
+        './test/specs/**/*.ts'
+    ],
+    maxInstances: 1,
+    capabilities: [{
+        maxInstances: 1,
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+            binary: path.join(chromePath, `chrome-mac-arm64`, chromeBinary),
+        },
+    }],
+    logLevel: 'info',
+    bail: 0,
+    baseUrl: 'http://localhost',
+    waitforTimeout: 10000,
+    connectionRetryTimeout: 120000,
+    connectionRetryCount: 3,
+    services: [
+        ['chromedriver', {
+            chromedriverCustomPath: path.join(chromeDriverPath, `chromedriver-mac-arm64`, chromeDriverBinary),
+        }]
+    ],
+    framework: 'mocha',
+    reporters: ['spec'],
+    mochaOpts: {
+        ui: 'bdd',
+        timeout: 60000
+    }
+};

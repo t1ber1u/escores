@@ -1,93 +1,139 @@
-import { Config } from '@wdio/sync';
-import path from 'path';
-import fs from 'fs';
+image: ${OCI_REGISTRY_HUB_URL}/node:${NODE_VERSION}
 
-function resolveDynamicFolder(basePath: string, pattern: string): string {
-    const directories = fs.readdirSync(basePath, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
-        .map(dirent => path.join(basePath, dirent.name));
+variables:
+  NODE_VERSION: "21.7.1"
 
-    if (directories.length !== 1) {
-        throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
-    }
+stages:
+  - build
+  - test
+  - deploy-snapshot
+  - deploy-release
+  - e2e
 
-    return directories[0];
-}
+build:
+  stage: build
+  variables:
+    KUBERNETES_CPU_REQUEST: "4200m"
+    KUBERNETES_CPU_LIMIT: "5000m"
+    KUBERNETES_MEMORY_REQUEST: "6750Mi"
+    KUBERNETES_MEMORY_LIMIT: "8000Mi"
+  script:
+    - npm config set registry https://artifactory.cgm.ag/artifactory/api/npm/global.npm.virtual/
+    - npm config set @artifactory:registry https://artifactory.cgm.ag/artifactory/api/npm/global.npm.virtual/
+    - npm install
+    - cd packages/container/
+    - npm install
+    - npm run build
+    - cd ../mrc/
+    - npm install
+    - npm run build
+    - cd ../organization/
+    - npm install
+    - npm run build
+    - cd ../patient-management/
+    - npm install
+    - npm run build
+    - cd ../../e2e
+    - npm install
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/packages/mrc/dist/
+      - ${CI_PROJECT_DIR}/packages/mrc/node_modules/
+      - ${CI_PROJECT_DIR}/packages/container/dist/
+      - ${CI_PROJECT_DIR}/packages/container/node_modules/
+      - ${CI_PROJECT_DIR}/packages/organization/dist/
+      - ${CI_PROJECT_DIR}/packages/organization/node_modules/
+      - ${CI_PROJECT_DIR}/packages/patient-management/dist/
+      - ${CI_PROJECT_DIR}/packages/patient-management/node_modules/
+      - ${CI_PROJECT_DIR}/packages/tests/e2e/node_modules/
 
-function resolveChromeBinary(basePath: string): string {
-    const chromePath = path.join(basePath, 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
-    if (fs.existsSync(chromePath)) {
-        return chromePath;
-    }
-    throw new Error(`Chrome binary not found at ${chromePath}`);
-}
+test:
+  stage: test
+  script:
+    - npm run test:container
+    - npm run test:mrc
+    - npm run test:organization
+    - npm run test:patient-management
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - ${CI_PROJECT_DIR}/node_modules/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+  interruptible: true
 
-function resolveChromeDriverBinary(basePath: string): string {
-    const driverDir = path.join(basePath, 'chromedriver-mac-arm64');
-    const driverPath = path.join(driverDir, 'chromedriver');
-    if (fs.existsSync(driverPath)) {
-        return driverPath;
-    }
-    throw new Error(`ChromeDriver binary not found at ${driverPath}`);
-}
+lint:
+  stage: test
+  script:
+    - npm run lint:container
+    - npm run lint:mrc
+    - npm run lint:organization
+    - npm run lint:patient-management
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - ${CI_PROJECT_DIR}/node_modules/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+  interruptible: true
+  allow_failure: true
 
-const chromeBasePath = path.resolve(__dirname, './chrome');
-const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
+testAndAnalysis:
+  stage: test
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - ${CI_PROJECT_DIR}/packages/container/node_modules/
+      - ${CI_PROJECT_DIR}/packages/organization/node_modules/
+      - ${CI_PROJECT_DIR}/packages/patient-management/node_modules/
+  script:
+    - export SNAPSHOT_VERSION=$(node -p "require('./package.json').version")
+    - npm version patch --no-git-tag-version
+    - export RELEASE_VERSION=$(node -p "require('./package.json').version")
+    - echo SNAPSHOT_VERSION=${SNAPSHOT_VERSION} >> ${CI_PROJECT_DIR}/build.env
+    - echo RELEASE_VERSION=${RELEASE_VERSION} >> ${CI_PROJECT_DIR}/build.env
+    - cd packages/container
+    - ../../node_modules/.bin/ts-node-client -k ${trustsourceApiKey} -p eden
+    - cd ../mrc
+    - ../../node_modules/.bin/ts-node-client -k ${trustsourceApiKey} -p eden
+    - cd ../organization
+    - ../../node_modules/.bin/ts-node-client -k ${trustsourceApiKey} -p eden
 
-const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, 'mac_arm-');
-const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, 'mac_arm-');
+deploy-snapshot:
+  stage: deploy-snapshot
+  script:
+    - ./deploy-snapshot.sh
 
-const chromeBinary = resolveChromeBinary(chromeVersionFolder);
-const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverVersionFolder);
+deploy-release:
+  stage: deploy-release
+  script:
+    - ./deploy-release.sh
 
-console.log('Resolved Chrome path:', chromeBinary);
-console.log('Resolved ChromeDriver path:', chromeDriverBinary);
-
-export const config: Config = {
-    runner: 'local',
-    specs: [
-        './test/specs/**/*.ts'
-    ],
-    maxInstances: 1,
-    capabilities: [{
-        maxInstances: 1,
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-            binary: chromeBinary,
-        },
-    }],
-    logLevel: 'info',
-    bail: 0,
-    baseUrl: 'http://localhost',
-    waitforTimeout: 10000,
-    connectionRetryTimeout: 120000,
-    connectionRetryCount: 3,
-    services: [
-        ['chromedriver', {
-            chromedriverCustomPath: chromeDriverBinary,
-        }]
-    ],
-    framework: 'cucumber',
-    reporters: [
-        'spec',
-        ['cucumberjs-json', {
-            jsonFolder: './reports/json/',
-            language: 'en',
-        }],
-    ],
-    cucumberOpts: {
-        require: ['./src/step_definitions/**/*.ts'],
-        backtrace: false,
-        requireModule: [],
-        dryRun: false,
-        failFast: false,
-        format: ['pretty'],
-        snippets: true,
-        source: true,
-        profile: [],
-        strict: false,
-        tagExpression: '',
-        timeout: 60000,
-        ignoreUndefinedDefinitions: false
-    },
-};
+e2e:
+  stage: e2e
+  script:
+    - cd packages/tests/e2e
+    - npx tsc -p tsconfig.scripts.json && node scripts/identify_chrome_version.js
+    - npm run test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - ${CI_PROJECT_DIR}/packages/tests/e2e/node_modules/
+  artifacts:
+    paths:
+      - ./packages/tests/e2e/.tmp/*
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+  interruptible: true

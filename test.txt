@@ -7,6 +7,9 @@ function resolveDynamicPath(basePath: string, pattern: string): string {
         .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
         .map(dirent => path.join(basePath, dirent.name));
 
+    console.log(`Searching in basePath: ${basePath}, with pattern: ${pattern}`);
+    console.log(`Found directories: ${directories}`);
+
     if (directories.length !== 1) {
         throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
     }

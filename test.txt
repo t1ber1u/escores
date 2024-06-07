@@ -2,8 +2,20 @@ import { Config } from '@wdio/sync';
 import path from 'path';
 import fs from 'fs';
 
+function resolveDynamicFolder(basePath: string, pattern: string): string {
+    const directories = fs.readdirSync(basePath, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
+        .map(dirent => path.join(basePath, dirent.name));
+
+    if (directories.length !== 1) {
+        throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
+    }
+
+    return directories[0];
+}
+
 function resolveChromeBinary(basePath: string): string {
-    const chromePath = path.join(basePath, 'mac_arm-115.0.5790.170', 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
+    const chromePath = path.join(basePath, 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
     if (fs.existsSync(chromePath)) {
         return chromePath;
     }
@@ -11,7 +23,7 @@ function resolveChromeBinary(basePath: string): string {
 }
 
 function resolveChromeDriverBinary(basePath: string): string {
-    const driverDir = path.join(basePath, 'mac_arm-115.0.5790.170', 'chromedriver-mac-arm64');
+    const driverDir = path.join(basePath, 'chromedriver-mac-arm64');
     const driverPath = path.join(driverDir, 'chromedriver');
     if (fs.existsSync(driverPath)) {
         return driverPath;
@@ -22,8 +34,11 @@ function resolveChromeDriverBinary(basePath: string): string {
 const chromeBasePath = path.resolve(__dirname, './chrome');
 const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
 
-const chromeBinary = resolveChromeBinary(chromeBasePath);
-const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverBasePath);
+const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, 'mac_arm-');
+const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, 'mac_arm-');
+
+const chromeBinary = resolveChromeBinary(chromeVersionFolder);
+const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverVersionFolder);
 
 console.log('Resolved Chrome path:', chromeBinary);
 console.log('Resolved ChromeDriver path:', chromeDriverBinary);
@@ -52,10 +67,27 @@ export const config: Config = {
             chromedriverCustomPath: chromeDriverBinary,
         }]
     ],
-    framework: 'mocha',
-    reporters: ['spec'],
-    mochaOpts: {
-        ui: 'bdd',
-        timeout: 60000
-    }
+    framework: 'cucumber',
+    reporters: [
+        'spec',
+        ['cucumberjs-json', {
+            jsonFolder: './reports/json/',
+            language: 'en',
+        }],
+    ],
+    cucumberOpts: {
+        require: ['./src/step_definitions/**/*.ts'],
+        backtrace: false,
+        requireModule: [],
+        dryRun: false,
+        failFast: false,
+        format: ['pretty'],
+        snippets: true,
+        source: true,
+        profile: [],
+        strict: false,
+        tagExpression: '',
+        timeout: 60000,
+        ignoreUndefinedDefinitions: false
+    },
 };

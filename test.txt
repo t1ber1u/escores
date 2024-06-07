@@ -2,30 +2,31 @@ import { Config } from '@wdio/sync';
 import path from 'path';
 import fs from 'fs';
 
-function resolveDynamicPath(basePath: string, pattern: string): string {
-    const directories = fs.readdirSync(basePath, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
-        .map(dirent => path.join(basePath, dirent.name));
-
-    console.log(`Searching in basePath: ${basePath}, with pattern: ${pattern}`);
-    console.log(`Found directories: ${directories}`);
-
-    if (directories.length !== 1) {
-        throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
+function resolveChromeBinary(basePath: string): string {
+    const chromePath = path.join(basePath, 'mac_arm-115.0.5790.170', 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
+    if (fs.existsSync(chromePath)) {
+        return chromePath;
     }
+    throw new Error(`Chrome binary not found at ${chromePath}`);
+}
 
-    return directories[0];
+function resolveChromeDriverBinary(basePath: string): string {
+    const driverDir = path.join(basePath, 'mac_arm-115.0.5790.170', 'chromedriver-mac-arm64');
+    const driverPath = path.join(driverDir, 'chromedriver');
+    if (fs.existsSync(driverPath)) {
+        return driverPath;
+    }
+    throw new Error(`ChromeDriver binary not found at ${driverPath}`);
 }
 
 const chromeBasePath = path.resolve(__dirname, './chrome');
-const chromeDriverPath = path.resolve(__dirname, './chromedriver');
+const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
 
-const isWindows = process.platform === 'win32';
-const chromeBinary = isWindows ? 'chrome.exe' : path.join(chromeBasePath, 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing');
-const chromeDriverBinary = isWindows ? 'chromedriver.exe' : 'chromedriver';
+const chromeBinary = resolveChromeBinary(chromeBasePath);
+const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverBasePath);
 
 console.log('Resolved Chrome path:', chromeBinary);
-console.log('Resolved ChromeDriver path:', path.join(chromeDriverPath, chromeDriverBinary));
+console.log('Resolved ChromeDriver path:', chromeDriverBinary);
 
 export const config: Config = {
     runner: 'local',
@@ -48,7 +49,7 @@ export const config: Config = {
     connectionRetryCount: 3,
     services: [
         ['chromedriver', {
-            chromedriverCustomPath: path.join(chromeDriverPath, chromeDriverBinary),
+            chromedriverCustomPath: chromeDriverBinary,
         }]
     ],
     framework: 'mocha',

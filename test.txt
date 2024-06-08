@@ -1,5 +1,3 @@
-import type { Options } from '@wdio/types';
-import path from 'path';
 import fs from 'fs';
 import os from 'os';
 
@@ -42,36 +40,14 @@ function resolveChromeDriverBinary(basePath: string): string {
 const chromeBasePath = path.resolve(__dirname, './chrome');
 const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
 
-const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, 'chrome-');
-const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, 'chromedriver-');
+const chromeVersionPattern = os.platform() === 'darwin' ? 'mac_arm-' : 'linux-';
+const chromeDriverVersionPattern = os.platform() === 'darwin' ? 'mac_arm-' : 'linux-';
+
+const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, chromeVersionPattern);
+const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, chromeDriverVersionPattern);
 
 const chromeBinary = resolveChromeBinary(chromeVersionFolder);
 const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverVersionFolder);
 
 console.log('Resolved Chrome path:', chromeBinary);
 console.log('Resolved ChromeDriver path:', chromeDriverBinary);
-
------
-2024-06-08T11:22:28.673Z ERROR @wdio/config:ConfigParser: Failed loading configuration file: file:///Users/tibi/dev/code/eden-fe/packages/e2e/wdio.conf.ts: Expected exactly one directory matching pattern chrome- in /Users/tibi/dev/code/eden-fe/packages/e2e/chrome, found 0
-Error: Expected exactly one directory matching pattern chrome- in /Users/tibi/dev/code/eden-fe/packages/e2e/chrome, found 0
-    at resolveDynamicFolder (/Users/tibi/dev/code/eden-fe/packages/e2e/wdio.conf.ts:13:15)
-    at Object.<anonymous> (/Users/tibi/dev/code/eden-fe/packages/e2e/wdio.conf.ts:46:29)
-    at Module._compile (node:internal/modules/cjs/loader:1368:14)
-    at Module.m._compile (/Users/tibi/dev/code/eden-fe/packages/e2e/node_modules/ts-node/src/index.ts:1618:23)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1426:10)
-    at Object.require.extensions.<computed> [as .ts] (/Users/tibi/dev/code/eden-fe/packages/e2e/node_modules/ts-node/src/index.ts:1621:12)
-    at Module.load (node:internal/modules/cjs/loader:1205:32)
-    at Function.Module._load (node:internal/modules/cjs/loader:1021:12)
-    at cjsLoader (node:internal/modules/esm/translators:366:17)
-    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:315:7)
-
--------
-MAC Example paths
-
-/Users/tibi/dev/code/eden-fe/packages/e2e/chrome/mac_arm-120.0.6099.109/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
-/Users/tibi/dev/code/eden-fe/packages/e2e/chromedriver/mac_arm-120.0.6099.109/chromedriver-mac-arm64/chromedriver
-
-Linux gitlab example paths
-/builds/cgm.de.ais/eden/eden-fe/packages/e2e/chrome/linux-120.0.6099.109/chrome-linux64/chrome
- /builds/cgm.de.ais/eden/eden-fe/packages/e2e/chromedriver/linux-120.0.6099.109/chromedriver-linux64/chromedriver
------

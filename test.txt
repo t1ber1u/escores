@@ -1,7 +1,7 @@
-import { Options } from '@wdio/types';
-import { hooks } from './src/support/hooks.ts';
+import type { Options } from '@wdio/types';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
 function resolveDynamicFolder(basePath: string, pattern: string): string {
     const directories = fs.readdirSync(basePath, { withFileTypes: true })
@@ -16,37 +16,34 @@ function resolveDynamicFolder(basePath: string, pattern: string): string {
 }
 
 function resolveChromeBinary(basePath: string): string {
-    const isMac = process.platform === 'darwin';
+    const isMac = os.platform() === 'darwin';
     const chromePath = isMac ? 
-        path.join(basePath, 'mac_arm-', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing') :
-        path.join(basePath, 'linux-', 'chrome');
-    
+        path.join(basePath, 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing') :
+        path.join(basePath, 'chrome-linux64', 'chrome');
+
     if (fs.existsSync(chromePath)) {
         return chromePath;
     }
-
     throw new Error(`Chrome binary not found at ${chromePath}`);
 }
 
 function resolveChromeDriverBinary(basePath: string): string {
-    const isMac = process.platform === 'darwin';
-    const driverDir = isMac ? 
-        path.join(basePath, 'mac_arm-', 'chromedriver') :
-        path.join(basePath, 'linux-', 'chromedriver');
-    const driverPath = path.join(driverDir, 'chromedriver');
+    const isMac = os.platform() === 'darwin';
+    const driverPath = isMac ? 
+        path.join(basePath, 'chromedriver-mac-arm64', 'chromedriver') :
+        path.join(basePath, 'chromedriver-linux64', 'chromedriver');
 
     if (fs.existsSync(driverPath)) {
         return driverPath;
     }
-
     throw new Error(`ChromeDriver binary not found at ${driverPath}`);
 }
 
 const chromeBasePath = path.resolve(__dirname, './chrome');
 const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
 
-const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, process.platform === 'darwin' ? 'mac_arm-' : 'linux-');
-const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, process.platform === 'darwin' ? 'mac_arm-' : 'linux-');
+const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, 'chrome-');
+const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, 'chromedriver-');
 
 const chromeBinary = resolveChromeBinary(chromeVersionFolder);
 const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverVersionFolder);
@@ -55,41 +52,23 @@ console.log('Resolved Chrome path:', chromeBinary);
 console.log('Resolved ChromeDriver path:', chromeDriverBinary);
 
 export const config: Options.Testrunner = {
-    // Runner Configuration
-    runner: 'local',
-    path: '/',
-
-    // Specify Test Files
-    specs: [
-        './features/**/*.feature'
-    ],
-    exclude: [
-        // 'path/to/excluded/files'
-    ],
-    maxInstances: 1,
+    // ...
     capabilities: [{
         browserName: 'chrome',
         'goog:chromeOptions': {
             binary: chromeBinary,
-            args: ['--disable-infobars', '--disable-gpu', '--window-size=1920,1080']
-        }
+            args: [
+                '--disable-infobars',
+                '--headless',
+                '--disable-gpu',
+                '--window-size=1280,800',
+            ],
+        },
     }],
-    logLevel: 'info',
-    bail: 0,
-    baseUrl: 'http://localhost',
-    waitforTimeout: 10000,
-    connectionRetryTimeout: 90000,
-    connectionRetryCount: 3,
     services: [
         ['chromedriver', {
-            binary: chromeDriverBinary,
+            chromedriverCustomPath: chromeDriverBinary,
         }]
     ],
-    framework: 'cucumber',
-    reporters: ['spec'],
-    cucumberOpts: {
-        require: ['./steps/*.ts'],
-        format: ['pretty'],
-        timeout: 60000
-    }
+    // ...
 };

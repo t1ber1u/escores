@@ -1,53 +1,72 @@
-import fs from 'fs';
-import os from 'os';
+function getChromeVersion() {
+  let chromeVersion = '';
 
-function resolveDynamicFolder(basePath: string, pattern: string): string {
-    const directories = fs.readdirSync(basePath, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory() && dirent.name.includes(pattern))
-        .map(dirent => path.join(basePath, dirent.name));
+  switch (os.platform()) {
+    case 'darwin': // macOS
+      chromeVersion = execSync('/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version')
+        .toString()
+        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
+      break;
 
-    if (directories.length !== 1) {
-        throw new Error(`Expected exactly one directory matching pattern ${pattern} in ${basePath}, found ${directories.length}`);
-    }
+    case 'win32': // Windows
+      try {
+        const chromePath = fs.existsSync('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
+          ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+          : 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe';
+        chromeVersion = execSync(`"${chromePath}" --version`)
+          .toString()
+          .replace('Google Chrome ', '')
+          .trim();
+      } catch (err) {
+        console.error('Error detecting Chrome version on Windows:', err);
+      }
+      break;
 
-    return directories[0];
+    case 'linux': // Linux
+      chromeVersion = execSync('"/builds/cgm.de.ais/eden/eden-fe/packages/e2e/chrome/linux-120.0.6099.109/chrome-linux64/chrome" --version')
+        .toString()
+        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
+      break;
+
+    default:
+      console.error('Unsupported OS:', os.platform());
+      break;
+  }
+
+  return chromeVersion;
 }
 
-function resolveChromeBinary(basePath: string): string {
-    const isMac = os.platform() === 'darwin';
-    const chromePath = isMac ? 
-        path.join(basePath, 'chrome-mac-arm64', 'Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing') :
-        path.join(basePath, 'chrome-linux64', 'chrome');
+function getChromeDriverVersion() {
+  let chromeDriverVersion = '';
 
-    if (fs.existsSync(chromePath)) {
-        return chromePath;
-    }
-    throw new Error(`Chrome binary not found at ${chromePath}`);
+  switch (os.platform()) {
+    case 'darwin': // macOS
+      chromeDriverVersion = execSync('/usr/local/bin/chromedriver --version')
+        .toString()
+        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
+      break;
+
+    case 'win32': // Windows
+      try {
+        chromeDriverVersion = execSync('C:\\path\\to\\chromedriver.exe --version')
+          .toString()
+          .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
+      } catch (err) {
+        console.error('Error detecting ChromeDriver version on Windows:', err);
+      }
+      break;
+
+    case 'linux': // Linux
+      chromeDriverVersion = execSync('"/builds/cgm.de.ais/eden/eden-fe/packages/e2e/chromedriver/linux-120.0.6099.109/chromedriver-linux64/chromedriver" --version')
+        .toString()
+        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
+      break;
+
+    default:
+      console.error('Unsupported OS:', os.platform());
+      break;
+  }
+
+  return chromeDriverVersion;
 }
 
-function resolveChromeDriverBinary(basePath: string): string {
-    const isMac = os.platform() === 'darwin';
-    const driverPath = isMac ? 
-        path.join(basePath, 'chromedriver-mac-arm64', 'chromedriver') :
-        path.join(basePath, 'chromedriver-linux64', 'chromedriver');
-
-    if (fs.existsSync(driverPath)) {
-        return driverPath;
-    }
-    throw new Error(`ChromeDriver binary not found at ${driverPath}`);
-}
-
-const chromeBasePath = path.resolve(__dirname, './chrome');
-const chromeDriverBasePath = path.resolve(__dirname, './chromedriver');
-
-const chromeVersionPattern = os.platform() === 'darwin' ? 'mac_arm-' : 'linux-';
-const chromeDriverVersionPattern = os.platform() === 'darwin' ? 'mac_arm-' : 'linux-';
-
-const chromeVersionFolder = resolveDynamicFolder(chromeBasePath, chromeVersionPattern);
-const chromeDriverVersionFolder = resolveDynamicFolder(chromeDriverBasePath, chromeDriverVersionPattern);
-
-const chromeBinary = resolveChromeBinary(chromeVersionFolder);
-const chromeDriverBinary = resolveChromeDriverBinary(chromeDriverVersionFolder);
-
-console.log('Resolved Chrome path:', chromeBinary);
-console.log('Resolved ChromeDriver path:', chromeDriverBinary);

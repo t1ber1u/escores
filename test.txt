@@ -1,72 +1,67 @@
-function getChromeVersion() {
-  let chromeVersion = '';
+image: node:latest
 
-  switch (os.platform()) {
-    case 'darwin': // macOS
-      chromeVersion = execSync('/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version')
-        .toString()
-        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
-      break;
+stages:
+  - build
+  - test
 
-    case 'win32': // Windows
-      try {
-        const chromePath = fs.existsSync('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
-          ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-          : 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe';
-        chromeVersion = execSync(`"${chromePath}" --version`)
-          .toString()
-          .replace('Google Chrome ', '')
-          .trim();
-      } catch (err) {
-        console.error('Error detecting Chrome version on Windows:', err);
-      }
-      break;
-
-    case 'linux': // Linux
-      chromeVersion = execSync('"/builds/cgm.de.ais/eden/eden-fe/packages/e2e/chrome/linux-120.0.6099.109/chrome-linux64/chrome" --version')
-        .toString()
-        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
-      break;
-
-    default:
-      console.error('Unsupported OS:', os.platform());
-      break;
-  }
-
-  return chromeVersion;
-}
-
-function getChromeDriverVersion() {
-  let chromeDriverVersion = '';
-
-  switch (os.platform()) {
-    case 'darwin': // macOS
-      chromeDriverVersion = execSync('/usr/local/bin/chromedriver --version')
-        .toString()
-        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
-      break;
-
-    case 'win32': // Windows
-      try {
-        chromeDriverVersion = execSync('C:\\path\\to\\chromedriver.exe --version')
-          .toString()
-          .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
-      } catch (err) {
-        console.error('Error detecting ChromeDriver version on Windows:', err);
-      }
-      break;
-
-    case 'linux': // Linux
-      chromeDriverVersion = execSync('"/builds/cgm.de.ais/eden/eden-fe/packages/e2e/chromedriver/linux-120.0.6099.109/chromedriver-linux64/chromedriver" --version')
-        .toString()
-        .match(/\d+\.\d+\.\d+\.\d+/)[0] || '';
-      break;
-
-    default:
-      console.error('Unsupported OS:', os.platform());
-      break;
-  }
-
-  return chromeDriverVersion;
-}
-
+e2e_test:
+  stage: test
+  before_script:
+    - apt-get update && apt-get full-upgrade -y
+    - apt-get install -y \
+      gconf-service \
+      libasound2 \
+      libatk1.0-0 \
+      libc6 \
+      libcairo2 \
+      libcups2 \
+      libdbus-1-3 \
+      libexpat1 \
+      libfontconfig1 \
+      libgcc1 \
+      libgconf-2-4 \
+      libgdk-pixbuf2.0-0 \
+      libglib2.0-0 \
+      libgtk-3-0 \
+      libnspr4 \
+      libpango-1.0-0 \
+      libpangocairo-1.0-0 \
+      libstdc++6 \
+      libx11-6 \
+      libx11-xcb1 \
+      libxcb1 \
+      libxcomposite1 \
+      libxcursor1 \
+      libxdamage1 \
+      libxext6 \
+      libxfixes3 \
+      libxi6 \
+      libxrandr2 \
+      libxrender1 \
+      libxss1 \
+      libxtst6 \
+      ca-certificates \
+      fonts-liberation \
+      libnss3 \
+      lsb-release \
+      xdg-utils \
+      wget \
+      ca-certificates \
+      lib32gcc1 \
+      lib32stdc++6 \
+      libc6-i386 \
+      libclang-7-dev \
+      libclang-common-7-dev \
+      libclang-dev \
+      libclang1-7 \
+      libc6 \
+      libc6-dev \
+      libobjc-8-dev \
+      libobjc4 \
+      libpq5 \
+      libxcb-xkb1 \
+      libxkbcommon-x11-0
+  script:
+    - cd packages/e2e
+    - npm run chrome:install
+    - npm run test

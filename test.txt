@@ -1,27 +1,18 @@
-npm install wdio-multiple-cucumber-html-reporter --save-dev
-# or
-yarn add wdio-multiple-cucumber-html-reporter --dev
-
-import { browser } from 'webdriverio';
-
-// Capture screenshot
-const screenshot = await browser.takeScreenshot();
-multipleCucumberHtmlReporter.attach(screenshot, 'image/png', 'after');
-
-
-import { Given, Then } from '@wdio/cucumber-framework';
+import { Given, Then, After } from '@wdio/cucumber-framework';
 import { expect } from '@wdio/globals';
 import openUrl from '../support/action/openUrl';
 import DashboardPage from '../pages/dashboard.page';
-import multipleCucumberHtmlReporter from 'wdio-multiple-cucumber-html-reporter';
+import { browser } from 'webdriverio';
+import { addAttachment } from '@wdio/cucumberjs-json-reporter';
 
-After(async (scenarioResult) => {
-    if (scenarioResult.result.status === Status.FAILED) {
-        // It will add the screenshot to the JSON
+After(async function (scenario) {
+    if (scenario.result.status === 'failed') {
+        // Take screenshot
         const screenshot = await browser.takeScreenshot();
-        multipleCucumberHtmlReporter.attach(screenshot, 'image/png', 'after');
+        
+        // Attach screenshot to the JSON report
+        addAttachment('Screenshot', Buffer.from(screenshot, 'base64'), 'image/png');
     }
-    return scenarioResult.status;
 });
 
 Given(/^I am on the main page$/, async () => {

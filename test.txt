@@ -1,36 +1,58 @@
-import { Config } from '@wdio/types';
+import { Config, Options } from '@wdio/types';
 import { HookFunctions } from '@wdio/cucumber-framework';
 
-export const config: Config & HookFunctions = {
-    // Other configurations
+export const config: Options.Testrunner & HookFunctions = {
     runner: 'local',
+
+    autoCompileOpts: {
+        autoCompile: true,
+        tsNodeOpts: {
+            project: './tsconfig.json',
+            transpileOnly: true
+        }
+    },
+
     specs: [
-        './test/features/**/*.feature'
+        './src/features/**/*.feature'
     ],
+
+    exclude: [
+        // 'path/to/excluded/files'
+    ],
+
+    maxInstances: 1,
+
     capabilities: [{
         maxInstances: 1,
         browserName: 'chrome',
     }],
+
     logLevel: 'info',
     framework: 'cucumber',
-    cucumberOpts: {
-        require: ['./test/steps/**/*.ts'],
-        timeout: 60000,
-    },
+
     reporters: ['spec'],
+
+    cucumberOpts: {
+        require: ['./src/steps/**/*.ts'],
+        backtrace: false,
+        requireModule: [],
+        dryRun: false,
+        failFast: false,
+        format: ['pretty'],
+        colors: true,
+        snippets: true,
+        source: true,
+        profile: [],
+        strict: false,
+        tagExpression: '',
+        timeout: 60000,
+        ignoreUndefinedDefinitions: false
+    },
 
     // Hook to take screenshot on test failure
     afterStep: async function (test, context, { error, result, duration, passed, retries }) {
         if (error && context.pickle.tags.some(tag => tag.name === '@browser')) {
             await browser.takeScreenshot();
         }
-    },
-
-    // For TypeScript support
-    autoCompileOpts: {
-        autoCompile: true,
-        tsNodeOpts: {
-            project: './tsconfig.json'
-        },
     },
 };

@@ -1,6 +1,7 @@
 import { Config } from '@wdio/types';
+import { HookFunctions } from '@wdio/cucumber-framework';
 
-export const config: Config = {
+export const config: Config & HookFunctions = {
     // Other configurations
     runner: 'local',
     specs: [
@@ -19,7 +20,7 @@ export const config: Config = {
     reporters: ['spec'],
 
     // Hook to take screenshot on test failure
-    afterStep: async (test, context, { error, result, duration, passed, retries }) => {
+    afterStep: async function (test, context, { error, result, duration, passed, retries }) {
         if (error && context.pickle.tags.some(tag => tag.name === '@browser')) {
             await browser.takeScreenshot();
         }

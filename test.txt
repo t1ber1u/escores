@@ -1,58 +1,39 @@
-import { Config, Options } from '@wdio/types';
-import { HookFunctions } from '@wdio/cucumber-framework';
+npm install wdio-multiple-cucumber-html-reporter --save-dev
+# or
+yarn add wdio-multiple-cucumber-html-reporter --dev
 
-export const config: Options.Testrunner & HookFunctions = {
-    runner: 'local',
+import { browser } from 'webdriverio';
 
-    autoCompileOpts: {
-        autoCompile: true,
-        tsNodeOpts: {
-            project: './tsconfig.json',
-            transpileOnly: true
-        }
-    },
+// Capture screenshot
+const screenshot = await browser.takeScreenshot();
+multipleCucumberHtmlReporter.attach(screenshot, 'image/png', 'after');
 
-    specs: [
-        './src/features/**/*.feature'
-    ],
 
-    exclude: [
-        // 'path/to/excluded/files'
-    ],
+import { Given, Then } from '@wdio/cucumber-framework';
+import { expect } from '@wdio/globals';
+import openUrl from '../support/action/openUrl';
+import DashboardPage from '../pages/dashboard.page';
+import multipleCucumberHtmlReporter from 'wdio-multiple-cucumber-html-reporter';
 
-    maxInstances: 1,
+After(async (scenarioResult) => {
+    if (scenarioResult.result.status === Status.FAILED) {
+        // It will add the screenshot to the JSON
+        const screenshot = await browser.takeScreenshot();
+        multipleCucumberHtmlReporter.attach(screenshot, 'image/png', 'after');
+    }
+    return scenarioResult.status;
+});
 
-    capabilities: [{
-        maxInstances: 1,
-        browserName: 'chrome',
-    }],
+Given(/^I am on the main page$/, async () => {
+    await openUrl('url', 'https://devi.eden-dev1.cloud.c3.cgn.ag/eden-fe/');
+});
 
-    logLevel: 'info',
-    framework: 'cucumber',
+Then(/^I should see a page with (.+)$/, async (title) => {
+    const pageTitle = await DashboardPage.getTitle();
 
-    reporters: ['spec'],
-
-    cucumberOpts: {
-        require: ['./src/steps/**/*.ts'],
-        backtrace: false,
-        requireModule: [],
-        dryRun: false,
-        failFast: false,
-        format: ['pretty'],
-        colors: true,
-        snippets: true,
-        source: true,
-        profile: [],
-        strict: false,
-        tagExpression: '',
-        timeout: 60000,
-        ignoreUndefinedDefinitions: false
-    },
-
-    // Hook to take screenshot on test failure
-    afterStep: async function (test, context, { error, result, duration, passed, retries }) {
-        if (error && context.pickle.tags.some(tag => tag.name === '@browser')) {
-            await browser.takeScreenshot();
-        }
-    },
-};
+    try {
+        await expect(pageTitle).toBe(title);
+    } catch (error) {
+        throw new Error(`Expected page title to be ${title}, but found ${pageTitle}`);
+    }
+});

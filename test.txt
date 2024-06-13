@@ -1,30 +1,116 @@
-import { Given, Then, After } from '@wdio/cucumber-framework';
-import { expect } from '@wdio/globals';
-import openUrl from '../support/action/openUrl';
-import DashboardPage from '../pages/dashboard.page';
-import { browser } from 'webdriverio';
-import { addAttachment } from '@wdio/cucumberjs-json-reporter';
+class BrowserWrapper {
+  constructor(browser) {
+    this.browser = browser;
+  }
 
-After(async function (scenario) {
-    if (scenario.result.status === 'failed') {
-        // Take screenshot
-        const screenshot = await browser.takeScreenshot();
-        
-        // Attach screenshot to the JSON report
-        addAttachment('Screenshot', Buffer.from(screenshot, 'base64'), 'image/png');
+  async waitForElement(selector, retries = 5, timeout = 3000) {
+    let attempts = 0;
+    while (attempts < retries) {
+      try {
+        const element = await $(selector);
+        await element.waitForExist({ timeout });
+        return element;
+      } catch (error) {
+        attempts++;
+        if (attempts >= retries) {
+          throw new Error(`Element with selector ${selector} not found after ${retries} attempts.`);
+        }
+        await this.browser.pause(1000); // Wait for 1 second before retrying
+      }
     }
-});
+  }
 
-Given(/^I am on the main page$/, async () => {
-    await openUrl('url', 'https://devi.eden-dev1.cloud.c3.cgn.ag/eden-fe/');
-});
+  async switchToIframe(selector, retries = 5, timeout = 3000) {
+    const iframe = await this.waitForElement(selector, retries, timeout);
+    await this.browser.switchToFrame(iframe);
+  }
 
-Then(/^I should see a page with (.+)$/, async (title) => {
-    const pageTitle = await DashboardPage.getTitle();
+  async switchToMainFrame() {
+    await this.browser.switchToFrame(null);
+  }
 
+  async click(selector, retries = 5, timeout = 3000) {
     try {
-        await expect(pageTitle).toBe(title);
+      const element = await this.waitForElement(selector, retries, timeout);
+      await element.waitForClickable({ timeout });
+      await element.scrollIntoView();
+      await element.click();
     } catch (error) {
-        throw new Error(`Expected page title to be ${title}, but found ${pageTitle}`);
+      throw new Error(`Failed to click on element with selector ${selector}: ${error.message}`);
     }
+  }
+
+  async setValue(selector, value, retries = 5, timeout = 3000) {
+    try {
+      const element = await this.waitForElement(selector, retries, timeout);
+      await element.waitForEnabled({ timeout });
+      await element.clearValue();
+      await element.setValue(value);
+    } catch (error) {
+      throw new Error(`Failed to set value for element with selector ${selector}: ${error.message}`);
+    }
+  }
+
+  async startNetworkInterception() {
+    await this.browser.setupInterceptor();
+  }
+
+  async getNetworkRequests() {
+    return await this.browser.getRequests();
+  }
+
+  async assertJsonPayload(url, expectedPayload, method = 'POST') {
+    const requests = await this.getNetworkRequests();
+    const matchingRequest = requests.find(request => request.url.includes(url) && request.method === method);
+
+    if (!matchingRequest) {
+      throw new Error(`No network request found for URL: ${url} with method: ${method}`);
+    }
+
+    const actualPayload = matchingRequest.body;
+    expect(actualPayload).toEqual(expectedPayload);
+  }
+
+  async goToURL(url, waitForSelector = null, retries = 5, timeout = 3000) {
+    await this.browser.url(url);
+    if (waitForSelector) {
+      await this.waitForElement(waitForSelector, retries, timeout);
+    }
+  }
+
+  async takeElementScreenshotAndCompare(selector, baselineTag) {
+    try {
+      const element = await this.waitForElement(selector);
+      const result = await browser.checkElement(element, baselineTag);
+      if (result.misMatchPercentage > 0) {
+        throw new Error(`Visual difference found for ${baselineTag}: ${result.misMatchPercentage}%`);
+      }
+    } catch (error) {
+      throw new Error(`Failed to compare element screenshot for selector ${selector}: ${error.message}`);
+    }
+  }
+
+  // You can add more wrapper functions for other actions like getText, etc.
+}
+
+module.exports = BrowserWrapper;
+---------
+Feature: Navigation and page load
+
+  Scenario: Navigate to custom table page and wait for table to load
+    Given I navigate to the custom table page
+    Then I should see the custom table
+
+-----
+const { Given, Then } = require('@wdio/cucumber-framework');
+const BrowserWrapper = require('./browserWrapper'); // Adjust the path as necessary
+const browserWrapper = new BrowserWrapper(browser);
+
+Given('I navigate to the custom table page', async () => {
+  await browserWrapper.goToURL('/custom-table', '#custom-table');
+});
+
+Then('I should see the custom table', async () => {
+  const table = await $('#custom-table');
+  await expect(table).toBeDisplayed();
 });

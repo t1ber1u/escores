@@ -114,3 +114,50 @@ Then('I should see the custom table', async () => {
   const table = await $('#custom-table');
   await expect(table).toBeDisplayed();
 });
+---------
+
+
+import { Browser } from 'webdriverio';
+
+export default class BrowserWrapper {
+    private browser: Browser;
+
+    constructor(browser: Browser) {
+        this.browser = browser;
+    }
+
+    async goToURL(url: string, selector?: string | null): Promise<void> {
+        await this.browser.url(url);
+        if (selector) {
+            const element = await this.browser.$(selector);
+            await element.waitForExist();
+        }
+    }
+
+    async waitForElement(selector: string, retries = 5, timeout = 3000): Promise<WebdriverIO.Element> {
+        let attempts = 0;
+        while (attempts < retries) {
+            try {
+                const element = await this.browser.$(selector);
+                await element.waitForExist({ timeout });
+                return element;
+            } catch (error) {
+                attempts++;
+                if (attempts >= retries) {
+                    throw new Error(`Element with selector ${selector} not found after ${retries} attempts`);
+                }
+                await this.browser.pause(1000); // Wait for 1 second before retrying
+            }
+        }
+        throw new Error(`Element with selector ${selector} not found after ${retries} attempts`); // Just in case the loop logic fails
+    }
+
+    async switchToIframe(selector: string, retries = 5, timeout = 3000): Promise<void> {
+        const iframe = await this.waitForElement(selector, retries, timeout);
+        await this.browser.switchToFrame(iframe);
+    }
+
+    async switchToMainFrame(): Promise<void> {
+        await this.browser.switchToFrame(null);
+    }
+}

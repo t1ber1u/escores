@@ -1,163 +1,28 @@
-class BrowserWrapper {
-  constructor(browser) {
-    this.browser = browser;
-  }
+Here is a draft of a polite and respectful feedback email regarding Bogdan's interview for the Automation role:
 
-  async waitForElement(selector, retries = 5, timeout = 3000) {
-    let attempts = 0;
-    while (attempts < retries) {
-      try {
-        const element = await $(selector);
-        await element.waitForExist({ timeout });
-        return element;
-      } catch (error) {
-        attempts++;
-        if (attempts >= retries) {
-          throw new Error(`Element with selector ${selector} not found after ${retries} attempts.`);
-        }
-        await this.browser.pause(1000); // Wait for 1 second before retrying
-      }
-    }
-  }
+---
 
-  async switchToIframe(selector, retries = 5, timeout = 3000) {
-    const iframe = await this.waitForElement(selector, retries, timeout);
-    await this.browser.switchToFrame(iframe);
-  }
+Subject: Feedback on Bogdan Laculiceanu's Interview for Automation Role
 
-  async switchToMainFrame() {
-    await this.browser.switchToFrame(null);
-  }
+Hi Cosmina,
 
-  async click(selector, retries = 5, timeout = 3000) {
-    try {
-      const element = await this.waitForElement(selector, retries, timeout);
-      await element.waitForClickable({ timeout });
-      await element.scrollIntoView();
-      await element.click();
-    } catch (error) {
-      throw new Error(`Failed to click on element with selector ${selector}: ${error.message}`);
-    }
-  }
+I hope this message finds you well.
 
-  async setValue(selector, value, retries = 5, timeout = 3000) {
-    try {
-      const element = await this.waitForElement(selector, retries, timeout);
-      await element.waitForEnabled({ timeout });
-      await element.clearValue();
-      await element.setValue(value);
-    } catch (error) {
-      throw new Error(`Failed to set value for element with selector ${selector}: ${error.message}`);
-    }
-  }
+Thank you for considering my input regarding Bogdan Laculiceanu's interview for the Automation role on the EOS project. I appreciate the opportunity to provide feedback.
 
-  async startNetworkInterception() {
-    await this.browser.setupInterceptor();
-  }
+After the interview with Bogdan, I observed that he has a commendable level of experience in automation. However, it appears that he is more seasoned as a manual tester with some exposure to automation rather than being fully proficient and autonomous in automation tasks. 
 
-  async getNetworkRequests() {
-    return await this.browser.getRequests();
-  }
+For this role, I expected a candidate who could independently drive automation initiatives, bring extensive experience, and guide the project in the right direction to enhance the quality of the product. While Bogdan has shown some understanding and experience, he did not fully answer all my questions, which indicated a gap in the depth of his knowledge, particularly in areas beyond UI testing.
 
-  async assertJsonPayload(url, expectedPayload, method = 'POST') {
-    const requests = await this.getNetworkRequests();
-    const matchingRequest = requests.find(request => request.url.includes(url) && request.method === method);
+Given the needs of our project, I am concerned that he may miss opportunities to implement the necessary automation solutions effectively. Nonetheless, Bogdan's background and skills could be a valuable asset in a role that allows for further development and growth in automation.
 
-    if (!matchingRequest) {
-      throw new Error(`No network request found for URL: ${url} with method: ${method}`);
-    }
+I hope this feedback helps in making an informed decision. Please let me know if you need any additional information or clarification.
 
-    const actualPayload = matchingRequest.body;
-    expect(actualPayload).toEqual(expectedPayload);
-  }
+Best regards,
 
-  async goToURL(url, waitForSelector = null, retries = 5, timeout = 3000) {
-    await this.browser.url(url);
-    if (waitForSelector) {
-      await this.waitForElement(waitForSelector, retries, timeout);
-    }
-  }
+[Your Name]  
+[Your Position]
 
-  async takeElementScreenshotAndCompare(selector, baselineTag) {
-    try {
-      const element = await this.waitForElement(selector);
-      const result = await browser.checkElement(element, baselineTag);
-      if (result.misMatchPercentage > 0) {
-        throw new Error(`Visual difference found for ${baselineTag}: ${result.misMatchPercentage}%`);
-      }
-    } catch (error) {
-      throw new Error(`Failed to compare element screenshot for selector ${selector}: ${error.message}`);
-    }
-  }
+---
 
-  // You can add more wrapper functions for other actions like getText, etc.
-}
-
-module.exports = BrowserWrapper;
----------
-Feature: Navigation and page load
-
-  Scenario: Navigate to custom table page and wait for table to load
-    Given I navigate to the custom table page
-    Then I should see the custom table
-
------
-const { Given, Then } = require('@wdio/cucumber-framework');
-const BrowserWrapper = require('./browserWrapper'); // Adjust the path as necessary
-const browserWrapper = new BrowserWrapper(browser);
-
-Given('I navigate to the custom table page', async () => {
-  await browserWrapper.goToURL('/custom-table', '#custom-table');
-});
-
-Then('I should see the custom table', async () => {
-  const table = await $('#custom-table');
-  await expect(table).toBeDisplayed();
-});
----------
-
-
-import { Browser } from 'webdriverio';
-
-export default class BrowserWrapper {
-    private browser: Browser;
-
-    constructor(browser: Browser) {
-        this.browser = browser;
-    }
-
-    async goToURL(url: string, selector?: string | null): Promise<void> {
-        await this.browser.url(url);
-        if (selector) {
-            const element = await this.browser.$(selector);
-            await element.waitForExist();
-        }
-    }
-
-    async waitForElement(selector: string, retries = 5, timeout = 3000): Promise<WebdriverIO.Element> {
-        let attempts = 0;
-        while (attempts < retries) {
-            try {
-                const element = await this.browser.$(selector);
-                await element.waitForExist({ timeout });
-                return element;
-            } catch (error) {
-                attempts++;
-                if (attempts >= retries) {
-                    throw new Error(`Element with selector ${selector} not found after ${retries} attempts`);
-                }
-                await this.browser.pause(1000); // Wait for 1 second before retrying
-            }
-        }
-        throw new Error(`Element with selector ${selector} not found after ${retries} attempts`); // Just in case the loop logic fails
-    }
-
-    async switchToIframe(selector: string, retries = 5, timeout = 3000): Promise<void> {
-        const iframe = await this.waitForElement(selector, retries, timeout);
-        await this.browser.switchToFrame(iframe);
-    }
-
-    async switchToMainFrame(): Promise<void> {
-        await this.browser.switchToFrame(null);
-    }
-}
+Feel free to adjust any details as needed to better fit your style or additional thoughts you may have.

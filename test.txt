@@ -1,34 +1,102 @@
-Here's a draft for your merge request description based on the changes you made:
+import BrowserWrapper from './browserWrapper';
 
----
+export default class Header {
+    private browserWrapper: BrowserWrapper;
 
-### Merge Request Description
+    constructor(browserWrapper: BrowserWrapper) {
+        this.browserWrapper = browserWrapper;
+    }
 
-#### Summary of Changes:
-1. **Dynamic Resolution of Chrome and Chromedriver:**
-   - Implemented dynamic resolution of the Chrome browser and Chromedriver on both local and CI environments.
+    // Selectors
+    get accountPicture() {
+        return this.browserWrapper.browser.$('[data-testid="header-account-picture"]');
+    }
 
-2. **BrowserWrapper Implementation:**
-   - Added `BrowserWrapper` to facilitate the future addition of functions aimed at handling WebDriverIO actions more safely.
+    get userName() {
+        return this.browserWrapper.browser.$('[data-testid="header-account-name"]');
+    }
 
-3. **End-to-End (E2E) Testing in CI:**
-   - Enabled the capability to run E2E tests in the CI pipeline.
-   - Modified `gitlab-ci.yml` to integrate E2E tests, ensuring proper execution in the CI environment.
+    get arrowButton() {
+        return this.browserWrapper.browser.$('[data-testid="header-account-arrow"]');
+    }
 
-4. **Documentation:**
-   - Added `README.MD` to provide detailed instructions and documentation for the changes and additions.
+    get logoutButton() {
+        return this.browserWrapper.browser.$('[data-testid="header-logout-button"]');
+    }
 
-5. **Screenshot Capability:**
-   - Added functionality to capture screenshots in case of test failures, improving reporting and debugging processes.
+    // Actions
+    async waitForHeaderElements() {
+        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-picture"]');
+        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-name"]');
+        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-arrow"]');
+    }
 
-6. **YAML Configuration Updates:**
-   - Made several updates to `gitlab-ci.yml`:
-     - Added steps for installing required dependencies at the OS level for Chrome and Chromedriver.
-     - Configured the YAML file to ensure proper installation and execution of necessary dependencies.
+    async clickArrowButton() {
+        await this.arrowButton.click();
+    }
 
-7. **Configuration Changes:**
-   - Updated `wdio.conf.ts` to support the new configurations and changes, enhancing the stability and reliability of the test environment.
+    async waitForLogoutButton() {
+        await this.browserWrapper.waitForDisplayed('[data-testid="header-logout-button"]');
+    }
 
----
+    async getInitialLetter() {
+        const pictureElement = await this.accountPicture;
+        const initialLetter = await pictureElement.getText();
+        return initialLetter.charAt(0);
+    }
+}
+---------
+import { Given, Then, When, After } from '@wdio/cucumber-framework';
+import { expect } from 'chai';
+import BrowserWrapper from '../support/browserWrapper';
+import Header from '../support/header';
+import cucumberJson from 'wdio-cucumberjs-json-reporter';
 
-Please review the above description and make any necessary adjustments.
+After(async function (scenario: any) {
+    if (scenario.result.status === 'FAILED') {
+        console.log('Expected test to pass but failed!');
+        const screenshot = await browser.takeScreenshot();
+        cucumberJson.attach(screenshot, 'image/png');
+    }
+});
+
+const browserWrapper = new BrowserWrapper(browser);
+const header = new Header(browserWrapper);
+
+Given('I am on the main page', async () => {
+    await browserWrapper.goToURL('https://dev1.eden-dev1.cloud.c3.cgm.ag/eden-fe/');
+    await browserWrapper.waitForDisplayed('[data-testid="header-account-button"]');
+});
+
+Then('I should see the account picture with initial {string}, user name {string}, and arrow button', async (initial, userName) => {
+    await header.waitForHeaderElements();
+    const actualInitial = await header.getInitialLetter();
+    const actualUserName = await header.userName.getText();
+    expect(actualInitial).to.equal(initial, `Expected initial letter to be ${initial}`);
+    expect(actualUserName).to.equal(userName, `Expected user name to be ${userName}`);
+});
+
+When('I click on the arrow button', async () => {
+    await header.clickArrowButton();
+});
+
+Then('I should see the logout button', async () => {
+    await header.waitForLogoutButton();
+});
+
+--------
+Feature: Main Feature
+
+  @main @browser
+  Scenario Outline: Health Check and Authentication
+    Given I am on the main page
+    Then I should see the account picture with initial <initial>, user name <userName>, and arrow button
+    When I click on the arrow button
+    Then I should see the logout button
+
+  Examples:
+    | initial | userName  |
+    | T       | Tenant 1  |
+    | A       | Admin     |
+    | U       | User 123  |
+

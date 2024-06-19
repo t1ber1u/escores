@@ -1,102 +1,24 @@
-import BrowserWrapper from './browserWrapper';
+export default class BrowserWrapper {
+    public browser: WebdriverIO.Browser;
 
-export default class Header {
-    private browserWrapper: BrowserWrapper;
-
-    constructor(browserWrapper: BrowserWrapper) {
-        this.browserWrapper = browserWrapper;
+    constructor(browser: WebdriverIO.Browser) {
+        this.browser = browser;
     }
 
-    // Selectors
-    get accountPicture() {
-        return this.browserWrapper.browser.$('[data-testid="header-account-picture"]');
+    async goToURL(url: string): Promise<void> {
+        try {
+            await this.browser.url(url);
+        } catch (error) {
+            throw new Error(`Failed to navigate to URL: ${url}. Error: ${error.message}`);
+        }
     }
 
-    get userName() {
-        return this.browserWrapper.browser.$('[data-testid="header-account-name"]');
-    }
-
-    get arrowButton() {
-        return this.browserWrapper.browser.$('[data-testid="header-account-arrow"]');
-    }
-
-    get logoutButton() {
-        return this.browserWrapper.browser.$('[data-testid="header-logout-button"]');
-    }
-
-    // Actions
-    async waitForHeaderElements() {
-        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-picture"]');
-        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-name"]');
-        await this.browserWrapper.waitForDisplayed('[data-testid="header-account-arrow"]');
-    }
-
-    async clickArrowButton() {
-        await this.arrowButton.click();
-    }
-
-    async waitForLogoutButton() {
-        await this.browserWrapper.waitForDisplayed('[data-testid="header-logout-button"]');
-    }
-
-    async getInitialLetter() {
-        const pictureElement = await this.accountPicture;
-        const initialLetter = await pictureElement.getText();
-        return initialLetter.charAt(0);
+    async waitForDisplayed(selector: string): Promise<void> {
+        try {
+            const element = await this.browser.$(selector);
+            await element.waitForDisplayed();
+        } catch (error) {
+            throw new Error(`Element with selector "${selector}" failed to display. Error: ${error.message}`);
+        }
     }
 }
----------
-import { Given, Then, When, After } from '@wdio/cucumber-framework';
-import { expect } from 'chai';
-import BrowserWrapper from '../support/browserWrapper';
-import Header from '../support/header';
-import cucumberJson from 'wdio-cucumberjs-json-reporter';
-
-After(async function (scenario: any) {
-    if (scenario.result.status === 'FAILED') {
-        console.log('Expected test to pass but failed!');
-        const screenshot = await browser.takeScreenshot();
-        cucumberJson.attach(screenshot, 'image/png');
-    }
-});
-
-const browserWrapper = new BrowserWrapper(browser);
-const header = new Header(browserWrapper);
-
-Given('I am on the main page', async () => {
-    await browserWrapper.goToURL('https://dev1.eden-dev1.cloud.c3.cgm.ag/eden-fe/');
-    await browserWrapper.waitForDisplayed('[data-testid="header-account-button"]');
-});
-
-Then('I should see the account picture with initial {string}, user name {string}, and arrow button', async (initial, userName) => {
-    await header.waitForHeaderElements();
-    const actualInitial = await header.getInitialLetter();
-    const actualUserName = await header.userName.getText();
-    expect(actualInitial).to.equal(initial, `Expected initial letter to be ${initial}`);
-    expect(actualUserName).to.equal(userName, `Expected user name to be ${userName}`);
-});
-
-When('I click on the arrow button', async () => {
-    await header.clickArrowButton();
-});
-
-Then('I should see the logout button', async () => {
-    await header.waitForLogoutButton();
-});
-
---------
-Feature: Main Feature
-
-  @main @browser
-  Scenario Outline: Health Check and Authentication
-    Given I am on the main page
-    Then I should see the account picture with initial <initial>, user name <userName>, and arrow button
-    When I click on the arrow button
-    Then I should see the logout button
-
-  Examples:
-    | initial | userName  |
-    | T       | Tenant 1  |
-    | A       | Admin     |
-    | U       | User 123  |
-

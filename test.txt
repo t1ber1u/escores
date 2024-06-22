@@ -1,24 +1,113 @@
-export default class BrowserWrapper {
-    public browser: WebdriverIO.Browser;
+Decision Framework for Placement of End-to-End Tests
 
-    constructor(browser: WebdriverIO.Browser) {
-        this.browser = browser;
-    }
+Project Name: EOS
 
-    async goToURL(url: string): Promise<void> {
-        try {
-            await this.browser.url(url);
-        } catch (error) {
-            throw new Error(`Failed to navigate to URL: ${url}. Error: ${error.message}`);
-        }
-    }
+	•	Teams Involved: Nexus, Unity, Magna
+	•	Current Repository: EDEN-FE
+	•	CI Platform: CGM GitLab CI
+	•	CI Configuration: Single gitlab-ci.yml at root
 
-    async waitForDisplayed(selector: string): Promise<void> {
-        try {
-            const element = await this.browser.$(selector);
-            await element.waitForDisplayed();
-        } catch (error) {
-            throw new Error(`Element with selector "${selector}" failed to display. Error: ${error.message}`);
-        }
-    }
-}
+Overview
+
+This decision framework aims to help the EOS project teams (Nexus, Unity, and Magna) decide whether to keep end-to-end (E2E) tests in the same repository as the frontend code (EDEN-FE) or to create a separate repository for the automation tests. This decision will take into account the current constraints, goals, and best practices for managing and executing E2E tests effectively.
+
+Current Constraints
+
+	•	Single gitlab-ci.yml File: Limits the configuration flexibility for different tests (team level tests).
+	•	Restricted Merge Permissions: Automation developers cannot merge directly into the main branch.
+	•	Shared Repository for Code and Tests: Automation tests and application code coexist, increasing the risk of accidental commits.
+
+Decision Criteria
+
+To decide whether to keep E2E tests in the same repository or move them to a separate repository, consider the following criteria:
+
+	1.	Version Control and Synchronization
+	•	Pros of Same Repo: Ensures tests are always in sync with the application code.
+	•	Cons of Same Repo: Increased risk of committing incorrect versions.
+	•	Pros of Separate Repo: Reduces risk of accidental commits; tests can be synchronized using version tags or branches.
+	•	Cons of Separate Repo: Requires consistent version management practices.
+	2.	CI/CD Pipeline Flexibility
+	•	Pros of Same Repo: Simplified pipeline setup; all configurations in one place.
+	•	Cons of Same Repo: Limited flexibility due to a single gitlab-ci.yml file; difficult to customize for different test requirements.
+	•	Pros of Separate Repo: Allows separate CI/CD configurations for tests; more flexibility in running tests with different parameters.
+	•	Cons of Separate Repo: More complex pipeline setup; requires coordination between repositories.
+	3.	Collaboration and Access Control
+	•	Pros of Same Repo: Easier to manage access in a single repository.
+	•	Cons of Same Repo: Restricted merge permissions may hinder automation developers.
+	•	Pros of Separate Repo: Can grant automation developers full control over the test repository.
+	•	Cons of Separate Repo: Requires additional access management; potential isolation of test activities.
+	4.	Risk Management
+	•	Pros of Same Repo: Direct integration ensures "immediate" development and feedback on code changes.
+	•	Cons of Same Repo: Higher risk of committing incorrect test code and configuration on CI yml.
+	•	Pros of Separate Repo: Isolates test code changes, reducing risk to application code.
+	•	Cons of Separate Repo: Potential delay in feedback if synchronization issues arise.
+	5.	Scalability and Maintainability
+	•	Pros of Same Repo: Aparent easier to maintain a single codebase.
+	•	Cons of Same Repo: Can become unscalable as the project grows. Difficult to push updates
+	•	Pros of Separate Repo: Allows focused management of tests; can scale independently.
+	•	Cons of Separate Repo: -
+
+Recommended Approach
+
+Based on the current constraints and decision criteria, here is a structured approach to make the decision:
+
+	1.	Evaluate Synchronization Needs:
+	•	Assess how often the application code and tests need to be synchronized.
+	•	If synchronization issues are frequent and critical, a Same Repo might be more practical.
+	2.	Assess CI/CD Requirements:
+	•	Determine the flexibility required in the CI/CD pipeline.
+	•	If different test configurations and parameters (e.g., by team) are needed frequently, a Separate Repo can offer more flexibility.
+	3.	Review Access and Collaboration Needs:
+	•	Consider the impact of restricted merge permissions on automation developers.
+	•	If current restrictions significantly hinder productivity, a Separate Repo can provide the necessary autonomy.
+	4.	Conduct a Risk Analysis:
+	•	Evaluate the risk of committing incorrect code into the main branch.
+	•	If the risk is high and has occurred before, isolating test code in a Separate Repo can mitigate this risk.
+	5.	Plan for Scalability:
+	•	Consider the future growth of the project and its impact on repository management.
+	•	If the project is expected to scale significantly, managing tests in a Separate Repo can improve maintainability.
+
+Conclusion and Next Steps
+
+Same Repo
+
+	•	Pros: Simplified management, potential synchronization, easier to manage access.
+	•	Cons: Limited CI/CD flexibility, higher risk of incorrect commits, restricted merge permissions hinder productivity.
+
+Separate Repo
+
+	•	Pros: Enhanced CI/CD flexibility, reduced risk of incorrect commits, autonomy for automation developers.
+	•	Cons: Requires consistent version management practices, potential isolation.
+
+Recomended Next Steps:
+
+	1.	Stakeholder Meeting: Gather input from Nexus, Unity, and Magna teams.
+	2.	Pilot Test: Set up a separate repository for a subset of tests to evaluate the impact.
+	3.	Review and Adjust: Assess the pilot results and make necessary adjustments.
+	4.	Implement Decision: Based on pilot outcomes, decide on the final approach and implement it.
+
+
+Personal Positive Aspects of Having a Separate Repository for E2E Tests (Chiriac Tiberiu)
+
+...here are some positive aspects of maintaining a separate repository for end-to-end (E2E) tests:
+
+	1.	Isolation and Independence:
+	•	Full Independence from the Tested Project: QA teams have full control over the test structure and organization, allowing us to implement and manage tests without affecting the main project.
+	•	Reduced Risk of Incorrect Commits: Isolating test code changes reduces the risk of committing incorrect versions or test configurations into the main application codebase.
+	2.	Flexibility in CI/CD Pipeline:
+	•	Enhanced CI/CD Flexibility: A separate repository allows for dedicated CI configurations tailored specifically for E2E tests, providing more flexibility in running tests with different parameters and conditions. (@magna, @unity, @nexus)
+	•	Consistent Version Management: Separate repositories can help in maintaining consistent versions of the code being tested. By using tags, branches, or Docker images, teams can ensure that tests are run against the correct versions of the application. More focus and targeted runs. 
+	3.	Focused Management and Scalability:
+	•	Focused Test Management: Allows for better organization and management of tests, which can be particularly beneficial for large projects with extensive test suites. This project will increase in size fast.
+	•	Scalability: A separate repository can scale independently, making it easier to manage a large number of tests and their configurations without cluttering the main application repository.
+	4.	Enhanced Collaboration and Autonomy:
+	•	Autonomy for QA Teams: QA team can have full control over their test repository, allowing them to manage test code, configurations, and dependencies without relying on the main development team.
+	•	Improved Coordination: By using a separate repository, automation developers can better coordinate E2E testing efforts and ensure that tests are run in a controlled environment.
+	5.	Efficient Test Execution:
+	•	Optimized Test Execution: Running E2E tests in a separate repository can optimize the execution process by focusing solely on the testing environment and configurations. This can lead to faster and more reliable test runs and test development in general
+	•	Dedicated Resources: A separate repository allows for the allocation of dedicated resources for running E2E tests, which can improve the overall efficiency and effectiveness of the testing process.
+	6.	Reduced CI Build Times:
+	•	Faster Builds: By isolating the E2E tests in a separate repository, the CI build times for the main application can be reduced, as the tests do not need to be included in the main CI pipeline. This doesnt exclude the ideea of having a healt check into the main CI pipeline. 
+	•	Parallel Testing: Tests can be run in parallel with the main application development, allowing for continuous testing without impacting the development workflow.
+
+

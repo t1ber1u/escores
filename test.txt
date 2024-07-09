@@ -1,9 +1,12 @@
-feat: Add Jira API client to src/zephyr
+Hi team,
 
-- Added a new folder `src/zephyr` with a Jira API client taken from another CGM automation project.
-- Note: The code hasn't been tested yet due to a missing Jira service account needed for the Jira API.
-- Currently working on raising a ticket on the Alice platform to obtain this service account.
-- This commit should not impact our tests at this point.
-- All tests will be run after committing this folder in CI to ensure no impact.
+Just a heads up on a recent update I made:
 
-# References: <Add any relevant Jira ticket or reference here>
+- I've added a new folder `src/zephyr` containing a Jira API client, which was taken from another CGM automation project.
+- Please note that the code hasn't been tested yet because we need a Jira service account for the API.
+- I'm in the process of raising a ticket on the Alice platform to get this service account.
+- This addition should not impact our tests at this stage.
+- I'll run all tests in CI after committing the folder to ensure there are no adverse effects.
+- Once we have the Jira service account, I will test the code, integrate it with our WebdriverIO framework, and push the test automation status results to our Jira tests.
+
+If you have any questions or concerns, feel free to reach out

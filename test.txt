@@ -1,9 +1,9 @@
-Here is the comment you can add to the Jira ticket:
+feat: Add Jira API client to src/zephyr
 
----
+- Added a new folder `src/zephyr` with a Jira API client taken from another CGM automation project.
+- Note: The code hasn't been tested yet due to a missing Jira service account needed for the Jira API.
+- Currently working on raising a ticket on the Alice platform to obtain this service account.
+- This commit should not impact our tests at this point.
+- All tests will be run after committing this folder in CI to ensure no impact.
 
-I had a call with the developer of the Zephyr client and found out that this client is integrated directly into the Cypress automation project and is not developed as a package released for other projects to be used. I will extract the relevant code from his project and try to adapt and make it work on our WebdriverIO project. Additionally, I will need a separate Jira service account because the account used is for project level, and I cannot use their account.
-
----
-
-Feel free to copy and paste this into your Jira ticket.
+# References: <Add any relevant Jira ticket or reference here>

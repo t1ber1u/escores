@@ -1,12 +1,20 @@
-Hi team,
+import { generate as generateTOTPToken } from 'totp-generator';
 
-Just a heads up on a recent update I made:
+export interface TotpOptions {
+  digits?: number;
+  period?: number;
+  algorithm?: 'SHA-1' | 'SHA-256' | 'SHA-512';
+  timestamp?: number;
+}
 
-- I've added a new folder `src/zephyr` containing a Jira API client, which was taken from another CGM automation project.
-- Please note that the code hasn't been tested yet because we need a Jira service account for the API.
-- I'm in the process of raising a ticket on the Alice platform to get this service account.
-- This addition should not impact our tests at this stage.
-- I'll run all tests in CI after committing the folder to ensure there are no adverse effects.
-- Once we have the Jira service account, I will test the code, integrate it with our WebdriverIO framework, and push the test automation status results to our Jira tests.
+export class TotpService {
+  private secret: string;
 
-If you have any questions or concerns, feel free to reach out
+  constructor(secret: string) {
+    this.secret = secret;
+  }
+
+  public generateToken(options: TotpOptions = {}): string {
+    return generateTOTPToken(this.secret, options);
+  }
+}

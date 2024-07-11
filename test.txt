@@ -1,47 +1,44 @@
-@Nexus
-Feature: Authentication Feature
-
-  Scenario Outline: User Authentication with TOTP
-    Given I am on the main page
-    When I input the email "<email>" and press "Continue"
-    And I input the password "<password>" and press "LOG IN"
-    And I input the TAN from the device and press "Check tan"
-    Then I should be successfully authenticated and see the main page
-
-    Examples:
-      | email                    | password  |
-      | tiberiu.chiriac@cgm.com  | yourPassword |
-
-
 import { Given, When, Then } from '@cucumber/cucumber';
-import { browser, $, $$ } from 'webdriverio';
-import TotpService from '../services/TotpService';
+import { browser } from 'webdriverio';
+import fetch from 'node-fetch';
+import { TOTP } from 'totp-generator';
 
 const secret = 'JBSWY3DPEHPK3PXP'; // Replace with your actual TOTP secret
-const totpService = new TotpService(secret);
+
+const fetchCurrentTime = async () => {
+  try {
+    const response = await fetch('http://worldtimeapi.org/api/timezone/Europe/Bucharest');
+    const data = await response.json();
+    return Math.floor(new Date(data.datetime).getTime() / 1000); // Current time in seconds
+  } catch (error) {
+    console.error('Error fetching time from API:', error);
+    throw error;
+  }
+};
 
 Given('I am on the main page', async () => {
   await browser.url('https://your-main-page-url.com');
 });
 
-When('I input the email {string} and press {string}', async (email: string, button: string) => {
-  await $('#email').setValue(email);
-  await $(`button=${button}`).click();
+When(/^I input the email (.*) and press (.*)$/, async (email: string, button: string) => {
+  await $('//input[@placeholder="Email address"]').setValue(email);
+  await $(`//button[contains(., '${button}')]`).click();
 });
 
-When('I input the password {string} and press {string}', async (password: string, button: string) => {
-  await $('#password').setValue(password);
-  await $(`button=${button}`).click();
+When(/^I input the password (.*) and press (.*)$/, async (password: string, button: string) => {
+  await $('//input[@placeholder="Password"]').setValue(password);
+  await $(`//button[contains(., '${button}')]`).click();
 });
 
-When('I input the TAN from the device and press {string}', async (button: string) => {
-  const tan = totpService.generateToken();
-  await $('#tan').setValue(tan);
-  await $(`button=${button}`).click();
+When(/^I input the TAN from the device and press (.*)$/, async (button: string) => {
+  const currentTime = await fetchCurrentTime();
+  const otp = TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: currentTime });
+  console.log(`Generated TAN: ${otp} at time: ${currentTime}`);
+  await $('//input[@data-testid="code_input"]').setValue(otp);
+  await $(`//button[contains(., '${button}')]`).click();
 });
 
 Then('I should be successfully authenticated and see the main page', async () => {
-  // Add your verification logic here to check if the main page is displayed
   const isMainPageVisible = await $('#main-page-identifier').isDisplayed(); // Replace with your actual main page identifier
   expect(isMainPageVisible).toBe(true);
 });

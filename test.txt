@@ -1,19 +1,20 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { browser } from 'webdriverio';
-import fetch from 'node-fetch';
 import { TOTP } from 'totp-generator';
+import moment from 'moment-timezone';
 
 const secret = 'JBSWY3DPEHPK3PXP'; // Replace with your actual TOTP secret
 
-const fetchCurrentTime = async () => {
-  try {
-    const response = await fetch('http://worldtimeapi.org/api/timezone/Europe/Bucharest');
-    const data = await response.json();
-    return Math.floor(new Date(data.datetime).getTime() / 1000); // Current time in seconds
-  } catch (error) {
-    console.error('Error fetching time from API:', error);
-    throw error;
+const getCurrentTimeInBucharest = (): number => {
+  const currentTime = moment();
+  const currentTimezone = currentTime.tz();
+  
+  if (currentTimezone !== 'Europe/Bucharest') {
+    const bucharestTime = currentTime.tz('Europe/Bucharest');
+    return bucharestTime.valueOf(); // Current time in milliseconds in Bucharest timezone
   }
+
+  return currentTime.valueOf(); // Current time in milliseconds in the local timezone
 };
 
 Given('I am on the main page', async () => {
@@ -31,9 +32,9 @@ When(/^I input the password (.*) and press (.*)$/, async (password: string, butt
 });
 
 When(/^I input the TAN from the device and press (.*)$/, async (button: string) => {
-  const currentTime = await fetchCurrentTime();
-  const otp = TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: currentTime });
-  console.log(`Generated TAN: ${otp} at time: ${currentTime}`);
+  const currentTimeInBucharest = getCurrentTimeInBucharest();
+  const otp = TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: currentTimeInBucharest });
+  console.log(`Generated TAN: ${otp} at time: ${currentTimeInBucharest}`);
   await $('//input[@data-testid="code_input"]').setValue(otp);
   await $(`//button[contains(., '${button}')]`).click();
 });

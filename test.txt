@@ -1,5 +1,3 @@
-Certainly! Here is the updated summary of the test automation concept, including the unique capability added for browser version management:
-
 ### Test Automation Concept for CGM
 
 #### **Overview:**
@@ -57,4 +55,66 @@ Certainly! Here is the updated summary of the test automation concept, including
 5. **Visibility:** Develop and implement email-based reporting for CI test runs
 6. **Flexibility:** Provide the capability to run tests on any Chrome browser version, enhancing test coverage and adaptability.
 
-This comprehensive summary now includes the unique capability for browser version management, which significantly enhances the flexibility and coverage of your test automation framework.
+### Risks in Test Automation and Mitigation Actions
+
+#### **Risk ID: R1**
+**Risk:** Not having well-defined acceptance criteria and requirements
+- **Mitigation Actions:**
+  - Conduct detailed requirement gathering sessions.
+  - Ensure user stories are specific, measurable, and achievable.
+  - Implement a rigorous review process for user stories and acceptance criteria.
+
+#### **Risk ID: R2**
+**Risk:** User stories being more like epics
+- **Mitigation Actions:**
+  - Break down large epics into smaller, more manageable user stories.
+  - Conduct regular grooming sessions to refine and split epics.
+  - Involve all stakeholders in defining and approving the scope of user stories.
+
+#### **Risk ID: R3**
+**Risk:** Application failing to meet its functional requirements
+- **Mitigation Actions:**
+  - Implement comprehensive test coverage for all functional requirements.
+  - Perform regular validation and verification against requirements.
+  - Involve business analysts and stakeholders in the review of test cases.
+
+#### **Risk ID: R4**
+**Risk:** Flaky tests in CI due to tests not executed in CI during the development process prior to merging into the main branch
+- **Mitigation Actions:**
+  - Enforce a policy that mandates running tests in CI before merging.
+  - Implement pre-merge checks and gates to ensure tests are executed.
+  - Conduct root cause analysis and fix flaky tests promptly.
+
+#### **Risk ID: R5**
+**Risk:** Variation in automation developers' experience levels
+- **Mitigation Actions:**
+  - Encourage setting personal development objectives.
+  - Promote sharing of knowledge and best practices.
+  - Conduct regular code reviews.
+  - Develop comprehensive documentation and guidelines.
+
+#### **Risk ID: R6**
+**Risk:** Automation failures when scenarios are executed in parallel to save time
+- **Mitigation Actions:**
+  - Ensure test scenarios are thread-safe and independent.
+  - Optimize the framework for parallel execution.
+  - Regularly review and refactor tests.
+  - Monitor and resolve concurrency issues.
+
+#### **Risk ID: R7**
+**Risk:** Changes from other teams (e.g., DevOps) not communicated, causing automation failures and blockages
+- **Mitigation Actions:**
+  - Establish clear communication protocols.
+  - Implement a change management process.
+  - Conduct regular cross-team meetings.
+  - Create a dedicated channel for urgent issues.
+
+#### **Risk ID: R8**
+**Risk:** False positives in the tests, especially at the BDD level
+- **Mitigation Actions:**
+  - Write clear and precise BDD scenarios.
+  - Regularly review and update test cases.
+  - Use robust validation techniques.
+  - Analyze and debug test results thoroughly.
+
+This chapter outlines potential risks in the test automation process and provides concise steps to mitigate these risks, ensuring a robust and reliable test automation framework.

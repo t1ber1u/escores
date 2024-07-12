@@ -1,88 +1,21 @@
-### Test Automation Concept for CGM
+@Debug
+Feature: Authentication Feature
 
-#### **Overview:**
-- **Project:** Test Automation for Eden-fe Application
-- **Architecture:** 
-  - Language: TypeScript
-  - Frameworks: WebdriverIO and Cucumber BDD
-  - CI/CD: GitLab with Kubernetes pods
-  - Repository: Shared with Eden-fe application code
+  Scenario Outline: User Authentication with TOTP
+    Given I am on the main page
+    When I input the email <email> and press "Continue"
+    And I input the password <password> and press "Log in"
+    And I input the TAN from the device and press "Check Tan"
+    Then I should see the account picture with initial T and user name Tenant 1
 
-#### **Development Environment:**
-- **IDE:** Visual Studio Code (VSCode), free version
-- **Version Control:** Git, following Git Flow for branching and merging
-- **Code Reviews:** Required approval from at least one reviewer for merge requests
+    Examples:
+      | email                        | password          |
+      | tiberiu.chiriac@cgm.com#2    | cgmPassword2024!  |
 
-#### **Project Structure:**
-- **Common Areas of Functionality:** General utilities and shared functions
-- **Custom Locations per Project:** Subfolders such as Unity, Magna, Nexus
+  Scenario Outline: Summarized Authentication with TOTP
+    Given I authenticate with email <email> and password <password>
+    Then I should see the account picture with initial T and user name Tenant 1
 
-#### **Automation Framework:**
-- **Wrapper:** A custom wrapper over WebdriverIO to enhance stability and functionality
-- **Locators:** 
-  - Use XPath and CSS locators
-  - Prefer relative locators over full path locators when IDs are not available
-
-#### **Cross-Platform Compatibility:**
-- Ensure paths and scripts are universal to support Windows, Linux, and MacOS
-
-#### **Testing Strategy:**
-- **Customer Bugs:** Automate to prevent recurrence
-- **User Stories:** Automate at the user story level where possible
-- **Execution:** 
-  - Local environment for development
-  - CI environment with tests filtered by team or run comprehensively
-
-#### **Reporting:**
-- **Output:** Standard BDD HTML reports
-- **Distribution:** Reports sent via email post CI test runs
-
-#### **CI/CD Integration:**
-- Tests run in Kubernetes pods within the internal GitLab CI pipeline
-- Unified process for running tests in different OS environments
-
-### Chosen Approach: Hybrid
-- **Hybrid Approach:** Only the crucial automation tasks are implemented by the developers themselves, while all other test cases are considered for follow-up automation done by the automation team. This approach ensures that automation is part of the user story and its definition of done but focuses on critical paths initially.
-
-### Unique Capability:
-- **Browser Version Management:** The automation project can run on any desired Chrome browser version both locally and in CI. A capability to install any version of Chrome and the corresponding ChromeDriver version has been added. Additionally, the installation of Firefox or other browsers can be done if needed. This flexibility avoids limitations associated with using a hardcoded browser version and enhances coverage and capability. Dedicated Chrome browsers built for automation by Google are utilized.
-
-### Key Goals:
-1. **Stability:** Enhance stability of UI tests through a custom WebdriverIO wrapper
-2. **Cross-Platform Support:** Ensure scripts are compatible across multiple operating systems
-3. **Efficiency:** Automate customer bugs and user stories to improve test coverage and quality
-4. **Consistency:** Follow Git Flow for consistent version control and code integration
-5. **Visibility:** Develop and implement email-based reporting for CI test runs
-6. **Flexibility:** Provide the capability to run tests on any Chrome browser version, enhancing test coverage and adaptability.
-
-### Risks in Test Automation and Mitigation Actions
-
-| **Risk ID** | **Risk**                                                                               | **Mitigation Actions**                                                                                             |
-|-------------|----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| R1          | Not having well-defined acceptance criteria and requirements                           | - Conduct detailed requirement gathering sessions<br>- Ensure user stories are specific, measurable, and achievable<br>- Implement a rigorous review process for user stories and acceptance criteria |
-| R2          | User stories being more like epics                                                     | - Break down large epics into smaller, more manageable user stories<br>- Conduct regular grooming sessions to refine and split epics<br>- Involve all stakeholders in defining and approving the scope of user stories |
-| R3          | Application failing to meet its functional requirements                                | - Implement comprehensive test coverage for all functional requirements<br>- Perform regular validation and verification against requirements<br>- Involve business analysts and stakeholders in the review of test cases |
-| R4          | Flaky tests in CI due to tests not executed in CI during the development process prior to merging into the main branch | - Enforce a policy that mandates running tests in CI before merging<br>- Implement pre-merge checks and gates to ensure tests are executed<br>- Conduct root cause analysis and fix flaky tests promptly |
-| R5          | Variation in automation developers' experience levels                                  | - Encourage setting personal development objectives<br>- Promote sharing of knowledge and best practices<br>- Conduct regular code reviews<br>- Develop comprehensive documentation and guidelines |
-| R6          | Automation failures when scenarios are executed in parallel to save time               | - Ensure test scenarios are thread-safe and independent<br>- Optimize the framework for parallel execution<br>- Regularly review and refactor tests<br>- Monitor and resolve concurrency issues |
-| R7          | Changes from other teams (e.g., DevOps) not communicated, causing automation failures and blockages | - Establish clear communication protocols<br>- Implement a change management process<br>- Conduct regular cross-team meetings<br>- Create a dedicated channel for urgent issues |
-| R8          | False positives in the tests, especially at the BDD level                              | - Write clear and precise BDD scenarios<br>- Regularly review and update test cases<br>- Use robust validation techniques<br>- Analyze and debug test results thoroughly |
-
-### Benefits of Using Test Automation
-
-1. **Increased Efficiency and Speed:**
-   - Automated tests can be run quickly and repeatedly, saving time compared to manual testing.
-   
-2. **Improved Test Coverage:**
-   - Automation allows for more extensive testing of applications, covering more scenarios and edge cases.
-   
-3. **Early Detection of Defects:**
-   - Continuous integration with automated testing helps identify issues early in the development cycle.
-   
-4. **Cost Savings:**
-   - Reduced manual testing efforts lead to lower costs in the long run, especially for regression testing.
-   
-5. **Team Wellbeing and High Quality:**
-   - Properly developed and implemented test automation ensures high-quality code, reducing stress and improving the overall wellbeing of the development and testing teams. 
-
-This structured document provides a comprehensive overview of the test automation concept, including risks, mitigation actions, and the benefits of using test automation.
+    Examples:
+      | email                        | password          |
+      | tiberiu.chiriac@cgm.com#2    | cgmPassword2024!  |

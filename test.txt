@@ -1,45 +1,56 @@
-import { Given, When, Then } from '@cucumber/cucumber';
-import { browser } from 'webdriverio';
-import { TOTP } from 'totp-generator';
-import moment from 'moment-timezone';
+Certainly! Here is the updated summary of the test automation concept, including the decision to follow the hybrid approach:
 
-const secret = 'JBSWY3DPEHPK3PXP'; // Replace with your actual TOTP secret
+### Test Automation Concept for CGM
 
-const getCurrentTimeInBucharest = (): number => {
-  const currentTime = moment();
-  const currentTimezone = currentTime.tz();
-  
-  if (currentTimezone !== 'Europe/Bucharest') {
-    const bucharestTime = currentTime.tz('Europe/Bucharest');
-    return bucharestTime.valueOf(); // Current time in milliseconds in Bucharest timezone
-  }
+#### **Overview:**
+- **Project:** Test Automation for Eden-fe Application
+- **Architecture:** 
+  - Language: TypeScript
+  - Frameworks: WebdriverIO and Cucumber BDD
+  - CI/CD: GitLab with Kubernetes pods
+  - Repository: Shared with Eden-fe application code
 
-  return currentTime.valueOf(); // Current time in milliseconds in the local timezone
-};
+#### **Development Environment:**
+- **IDE:** Visual Studio Code (VSCode), free version
+- **Version Control:** Git, following Git Flow for branching and merging
+- **Code Reviews:** Required approval from at least one reviewer for merge requests
 
-Given('I am on the main page', async () => {
-  await browser.url('https://your-main-page-url.com');
-});
+#### **Project Structure:**
+- **Common Areas of Functionality:** General utilities and shared functions
+- **Custom Locations per Project:** Subfolders such as Unity, Magna, Nexus
 
-When(/^I input the email (.*) and press (.*)$/, async (email: string, button: string) => {
-  await $('//input[@placeholder="Email address"]').setValue(email);
-  await $(`//button[contains(., '${button}')]`).click();
-});
+#### **Automation Framework:**
+- **Wrapper:** A custom wrapper over WebdriverIO to enhance stability and functionality
+- **Locators:** 
+  - Use XPath and CSS locators
+  - Prefer relative locators over full path locators when IDs are not available
 
-When(/^I input the password (.*) and press (.*)$/, async (password: string, button: string) => {
-  await $('//input[@placeholder="Password"]').setValue(password);
-  await $(`//button[contains(., '${button}')]`).click();
-});
+#### **Cross-Platform Compatibility:**
+- Ensure paths and scripts are universal to support Windows, Linux, and MacOS
 
-When(/^I input the TAN from the device and press (.*)$/, async (button: string) => {
-  const currentTimeInBucharest = getCurrentTimeInBucharest();
-  const otp = TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: currentTimeInBucharest });
-  console.log(`Generated TAN: ${otp} at time: ${currentTimeInBucharest}`);
-  await $('//input[@data-testid="code_input"]').setValue(otp);
-  await $(`//button[contains(., '${button}')]`).click();
-});
+#### **Testing Strategy:**
+- **Customer Bugs:** Automate to prevent recurrence
+- **User Stories:** Automate at the user story level where possible
+- **Execution:** 
+  - Local environment for development
+  - CI environment with tests filtered by team or run comprehensively
 
-Then('I should be successfully authenticated and see the main page', async () => {
-  const isMainPageVisible = await $('#main-page-identifier').isDisplayed(); // Replace with your actual main page identifier
-  expect(isMainPageVisible).toBe(true);
-});
+#### **Reporting:**
+- **Output:** Standard BDD HTML reports
+- **Distribution:** Reports sent via email post CI test runs
+
+#### **CI/CD Integration:**
+- Tests run in Kubernetes pods within the internal GitLab CI pipeline
+- Unified process for running tests in different OS environments
+
+### Chosen Approach: Hybrid
+- **Hybrid Approach:** Only the crucial automation tasks are implemented by the developers themselves, while all other test cases are considered for follow-up automation done by the automation team. This approach ensures that automation is part of the user story and its definition of done but focuses on critical paths initially.
+
+### Key Goals:
+1. **Stability:** Enhance stability of UI tests through a custom WebdriverIO wrapper
+2. **Cross-Platform Support:** Ensure scripts are compatible across multiple operating systems
+3. **Efficiency:** Automate customer bugs and user stories to improve test coverage and quality
+4. **Consistency:** Follow Git Flow for consistent version control and code integration
+5. **Visibility:** Develop and implement email-based reporting for CI test runs
+
+This comprehensive summary captures the essential aspects of your test automation strategy and includes the decision to adopt the hybrid approach for managing end-to-end and front-end test automation tasks.

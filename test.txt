@@ -1,21 +1,67 @@
-@Debug
-Feature: Authentication Feature
+import { Given, When, Then } from '@cucumber/cucumber';
+import BrowserWrapper from '../support/browserWrapper';
+const browser = new BrowserWrapper();
 
-  Scenario Outline: User Authentication with TOTP
-    Given I am on the main page
-    When I input the email <email> and press "Continue"
-    And I input the password <password> and press "Log in"
-    And I input the TAN from the device and press "Check Tan"
-    Then I should see the account picture with initial T and user name Tenant 1
+const { Browser } from 'totp-generator';
+const moment = require('moment-timezone');
 
-    Examples:
-      | email                        | password          |
-      | tiberiu.chiriac@cgm.com#2    | cgmPassword2024!  |
+const generateTOTP = (secret, period, timeZone) => {
+  const currentTime = moment().tz(timeZone).unix();
+  const TOTP = require('totp-generator');
+  return TOTP(secret, { algorithm: 'SHA-1', timestamp: currentTime, period: period });
+};
 
-  Scenario Outline: Summarized Authentication with TOTP
-    Given I authenticate with email <email> and password <password>
-    Then I should see the account picture with initial T and user name Tenant 1
+const getCurrentTimeInBucharest = () => {
+  const currentTimezone = moment.tz.guess();
+  const bucharestTime = moment().tz('Europe/Bucharest').unix();
+  return bucharestTime;
+};
 
-    Examples:
-      | email                        | password          |
-      | tiberiu.chiriac@cgm.com#2    | cgmPassword2024!  |
+When(/^I input the email (.+) and press (.+)$/, async (email, button) => {
+  await $('#input[placeholder="E-mail address"]').setValue(email);
+  await $(`//button[contains(.,"${button}")]`).click();
+});
+
+When(/^I input the password (.+) and press (.+)$/, async (password, button) => {
+  await $('#input[type="password"]').setValue(password);
+  await $(`//button[contains(.,"${button}")]`).click();
+});
+
+When(/^I input the TAN from the device and press (.+)$/, async (button) => {
+  const secret = '3B5YBYDPHGMDP3AF2FPH5TZQH7DSBY3DPKQGPX7P';
+  const period = 60;
+  const timeZone = 'Europe/Bucharest';
+  const otp = generateTOTP(secret, period, timeZone);
+  console.log(`Generated TAN: ${otp}`);
+
+  await $('#input[data-testid="code_input"]').setValue(otp);
+  await $(`//button[contains(.,"${button}")]`).click();
+});
+
+Then(/^I should be successfully authenticated and see the main page$/, async () => {
+  const isMainPageVisible = await $('.main-page-identifier').isDisplayed(); // Replace vip
+  expect(isMainPageVisible).toBe(true);
+});
+
+When(/^I authenticate with the email (.+) and password (.+)$/, async (email, password) => {
+  await $('#input[placeholder="E-mail address"]').setValue(email);
+  await $(`//button[contains(.,"Continue")]`).click();
+
+  await $('#input[type="password"]').setValue(password);
+  await $(`//button[contains(.,"Log in")]`).click();
+
+  const secret = '3B5YBYDPHGMDP3AF2FPH5TZQH7DSBY3DPKQGPX7P';
+  const period = 60;
+  const timeZone = 'Europe/Bucharest';
+  const otp = generateTOTP(secret, period, timeZone);
+  console.log(`Generated TAN: ${otp}`);
+
+  await $('#input[data-testid="code_input"]').setValue(otp);
+  await $(`//button[contains(.,"Check TAN")]`).click();
+});
+
+const getCurrentTimeInBucharest = () => {
+  const currentTimezone = moment.tz.guess();
+  const bucharestTime = moment().tz('Europe/Bucharest').unix();
+  return bucharestTime;
+};

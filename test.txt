@@ -1,67 +1,42 @@
-import { Given, When, Then } from '@cucumber/cucumber';
-import BrowserWrapper from '../support/browserWrapper';
-const browser = new BrowserWrapper();
+Here's a suggested pull request description based on your requirements:
 
-const { Browser } from 'totp-generator';
-const moment = require('moment-timezone');
+---
 
-const generateTOTP = (secret, period, timeZone) => {
-  const currentTime = moment().tz(timeZone).unix();
-  const TOTP = require('totp-generator');
-  return TOTP(secret, { algorithm: 'SHA-1', timestamp: currentTime, period: period });
-};
+### Pull Request: Implement TOTP Authentication
 
-const getCurrentTimeInBucharest = () => {
-  const currentTimezone = moment.tz.guess();
-  const bucharestTime = moment().tz('Europe/Bucharest').unix();
-  return bucharestTime;
-};
+#### Description
+This pull request introduces TOTP (Time-based One-Time Password) authentication, currently working against the `dev1` environment. The implementation is initial and may require further refactoring to address performance issues. 
 
-When(/^I input the email (.+) and press (.+)$/, async (email, button) => {
-  await $('#input[placeholder="E-mail address"]').setValue(email);
-  await $(`//button[contains(.,"${button}")]`).click();
-});
+#### Key Points:
+- **Teams Involved**: Implemented for all teams: @magna, @unity, @nexus.
+- **Environment**: Tested on MacOS and CI environments only. Windows users, please pull the `develop` branch and test the code on your machines.
+- **User Implementation**: The implementation is abstract, allowing any user to be defined at the feature file level. It is recommended to use your own users for testing in feature files.
+- **Session Handling**: The issue where subsequent scenarios in the same feature file failed authentication due to an existing session has been resolved. Now, if an authenticated session exists from a previous scenario, subsequent scenarios will not attempt to re-authenticate.
 
-When(/^I input the password (.+) and press (.+)$/, async (password, button) => {
-  await $('#input[type="password"]').setValue(password);
-  await $(`//button[contains(.,"${button}")]`).click();
-});
+#### Next Steps:
+- **Discussions Needed**: Further discussions are required to finalize the authentication implementation.
+- **Testing and Feedback**: Windows users and other team members are encouraged to test and provide feedback.
 
-When(/^I input the TAN from the device and press (.+)$/, async (button) => {
-  const secret = '3B5YBYDPHGMDP3AF2FPH5TZQH7DSBY3DPKQGPX7P';
-  const period = 60;
-  const timeZone = 'Europe/Bucharest';
-  const otp = generateTOTP(secret, period, timeZone);
-  console.log(`Generated TAN: ${otp}`);
+Please note that this is the initial implementation and further refinements are expected. 
 
-  await $('#input[data-testid="code_input"]').setValue(otp);
-  await $(`//button[contains(.,"${button}")]`).click();
-});
+---
 
-Then(/^I should be successfully authenticated and see the main page$/, async () => {
-  const isMainPageVisible = await $('.main-page-identifier').isDisplayed(); // Replace vip
-  expect(isMainPageVisible).toBe(true);
-});
+#### Teams Chat Message:
+---
 
-When(/^I authenticate with the email (.+) and password (.+)$/, async (email, password) => {
-  await $('#input[placeholder="E-mail address"]').setValue(email);
-  await $(`//button[contains(.,"Continue")]`).click();
+Hi Team,
 
-  await $('#input[type="password"]').setValue(password);
-  await $(`//button[contains(.,"Log in")]`).click();
+I have introduced TOTP authentication in our automation framework, now working against the `dev1` environment. This implementation has been added for all teams: @magna, @unity, @nexus.
 
-  const secret = '3B5YBYDPHGMDP3AF2FPH5TZQH7DSBY3DPKQGPX7P';
-  const period = 60;
-  const timeZone = 'Europe/Bucharest';
-  const otp = generateTOTP(secret, period, timeZone);
-  console.log(`Generated TAN: ${otp}`);
+**Key Points:**
+- **Environment**: Currently tested on MacOS and CI environments. Windows users, please pull the `develop` branch and test the code on your machines.
+- **User Implementation**: Abstract implementation allowing user definitions at the feature file level. I recommend using your own users for testing in feature files.
+- **Session Handling**: Resolved the issue where subsequent scenarios in the same feature file failed due to an existing authenticated session. Now, if a session exists from a previous scenario, subsequent scenarios will not re-authenticate.
 
-  await $('#input[data-testid="code_input"]').setValue(otp);
-  await $(`//button[contains(.,"Check TAN")]`).click();
-});
+This is the initial implementation, and further discussions and refinements are expected. Please provide feedback and test on your respective environments.
 
-const getCurrentTimeInBucharest = () => {
-  const currentTimezone = moment.tz.guess();
-  const bucharestTime = moment().tz('Europe/Bucharest').unix();
-  return bucharestTime;
-};
+Thanks!
+
+---
+
+Feel free to modify as needed!

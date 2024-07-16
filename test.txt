@@ -1,42 +1,21 @@
-Here's a suggested pull request description based on your requirements:
+const getCurrentTimeInBucharest = (): number => {
+  const currentTime = moment();
+  const currentTimezone = moment.tz.guess();
+  console.log(`Found Timezone: ${currentTimezone}`);
+  console.log(`Found Local Time: ${currentTime.format('HH:mm:ss')}`);
 
----
+  if (currentTimezone === 'Europe/Bucharest' || currentTimezone === 'Europe/Berlin') {
+    const bucharestTime = currentTime.tz('Europe/Bucharest');
+    console.log(`Timezone ${currentTimezone} with time in Bucharest: ${bucharestTime.format('HH:mm:ss')}`);
+    return bucharestTime.valueOf(); // Current time in milliseconds in Bucharest timezone
+  } else {
+    const bucharestTimePlus60seconds = currentTime.add(60, 'seconds');
+    console.log(`Adding 60 seconds as this environment has been identified as CI and needs to sync the time for valid TAN number`);
+    console.log(`Setting Timezone with time in Bucharest plus 60 seconds: ${bucharestTimePlus60seconds.format('HH:mm:ss')}`);
+    return bucharestTimePlus60seconds.valueOf(); // Current time in milliseconds in Bucharest timezone
+  }
+};
 
-### Pull Request: Implement TOTP Authentication
-
-#### Description
-This pull request introduces TOTP (Time-based One-Time Password) authentication, currently working against the `dev1` environment. The implementation is initial and may require further refactoring to address performance issues. 
-
-#### Key Points:
-- **Teams Involved**: Implemented for all teams: @magna, @unity, @nexus.
-- **Environment**: Tested on MacOS and CI environments only. Windows users, please pull the `develop` branch and test the code on your machines.
-- **User Implementation**: The implementation is abstract, allowing any user to be defined at the feature file level. It is recommended to use your own users for testing in feature files.
-- **Session Handling**: The issue where subsequent scenarios in the same feature file failed authentication due to an existing session has been resolved. Now, if an authenticated session exists from a previous scenario, subsequent scenarios will not attempt to re-authenticate.
-
-#### Next Steps:
-- **Discussions Needed**: Further discussions are required to finalize the authentication implementation.
-- **Testing and Feedback**: Windows users and other team members are encouraged to test and provide feedback.
-
-Please note that this is the initial implementation and further refinements are expected. 
-
----
-
-#### Teams Chat Message:
----
-
-Hi Team,
-
-I have introduced TOTP authentication in our automation framework, now working against the `dev1` environment. This implementation has been added for all teams: @magna, @unity, @nexus.
-
-**Key Points:**
-- **Environment**: Currently tested on MacOS and CI environments. Windows users, please pull the `develop` branch and test the code on your machines.
-- **User Implementation**: Abstract implementation allowing user definitions at the feature file level. I recommend using your own users for testing in feature files.
-- **Session Handling**: Resolved the issue where subsequent scenarios in the same feature file failed due to an existing authenticated session. Now, if a session exists from a previous scenario, subsequent scenarios will not re-authenticate.
-
-This is the initial implementation, and further discussions and refinements are expected. Please provide feedback and test on your respective environments.
-
-Thanks!
-
----
-
-Feel free to modify as needed!
+const generateTOTP = (secret: string, period: number, timeZone: any) => {
+  return TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: getCurrentTimeInBucharest(), period: period });
+};

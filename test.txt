@@ -1,21 +1,24 @@
-const getCurrentTimeInBucharest = (): number => {
-  const currentTime = moment();
-  const currentTimezone = moment.tz.guess();
-  console.log(`Found Timezone: ${currentTimezone}`);
-  console.log(`Found Local Time: ${currentTime.format('HH:mm:ss')}`);
+Here are the answers to the questions based on the provided information:
 
-  if (currentTimezone === 'Europe/Bucharest' || currentTimezone === 'Europe/Berlin') {
-    const bucharestTime = currentTime.tz('Europe/Bucharest');
-    console.log(`Timezone ${currentTimezone} with time in Bucharest: ${bucharestTime.format('HH:mm:ss')}`);
-    return bucharestTime.valueOf(); // Current time in milliseconds in Bucharest timezone
-  } else {
-    const bucharestTimePlus60seconds = currentTime.add(60, 'seconds');
-    console.log(`Adding 60 seconds as this environment has been identified as CI and needs to sync the time for valid TAN number`);
-    console.log(`Setting Timezone with time in Bucharest plus 60 seconds: ${bucharestTimePlus60seconds.format('HH:mm:ss')}`);
-    return bucharestTimePlus60seconds.valueOf(); // Current time in milliseconds in Bucharest timezone
-  }
-};
+1. **What the purpose of the access? (Describe the use-case and how it is implemented)**
+   - The purpose of the access is to push the test results of the automated tests of the EOS - Eden project into Jira Zephyr via API. On the project level, the automated tests will include an API client, and at the end of the test run, the results of the tests (passed, failed, skipped) will be pushed directly into Jira Zephyr using API calls.
 
-const generateTOTP = (secret: string, period: number, timeZone: any) => {
-  return TOTP.generate(secret, { algorithm: 'SHA-1', timestamp: getCurrentTimeInBucharest(), period: period });
-};
+2. **I checked that there is no already established alternative or other central provided tool for my case, yet.**
+   - Yes, I have checked, and there is no already established alternative or other centrally provided tool for this case yet.
+
+3. **Is the requested Service Account solely used for Jira or Confluence or both?**
+   - The requested Service Account is solely used for Jira.
+
+4. **Do you only need token-based authentication from your connected service? (Using Personal Access Tokens in Jira/Confluence)**
+   - Yes, token-based authentication using Personal Access Tokens in Jira is required.
+
+5. **Who can we contact as a responsible for this service account?**
+   - The responsible contact for this service account is [Your Name] (or your designated contact person).
+
+6. **Which service or product will the account be used for? (This is either the name of the CGM product or of a GroupIT Service)**
+   - The account will be used for the EOS - Eden project, specifically for pushing automated test results into Jira Zephyr.
+
+7. **As basic authentication (username/password) will be disabled to the REST API we would need a workaround**
+   - Token-based authentication will be used as the workaround for the REST API, adhering to the security policies and guidelines.
+
+Make sure to fill in the designated fields with the specific names and contact information relevant to your request.

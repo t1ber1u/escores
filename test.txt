@@ -1,24 +1,35 @@
-Here are the answers to the questions based on the provided information:
+Feature: Validate the additional information section UI
 
-1. **What the purpose of the access? (Describe the use-case and how it is implemented)**
-   - The purpose of the access is to push the test results of the automated tests of the EOS - Eden project into Jira Zephyr via API. On the project level, the automated tests will include an API client, and at the end of the test run, the results of the tests (passed, failed, skipped) will be pushed directly into Jira Zephyr using API calls.
+  Scenario Outline: Validate each row's UI components
+    Given I am on the additional information section
+    Then I should see the checkbox for "<label>"
+    And the checkbox for "<label>" is unchecked
+    And the date field next to "<label>" is displayed and disabled
+    And the text field next to "<label>" is displayed and disabled
 
-2. **I checked that there is no already established alternative or other central provided tool for my case, yet.**
-   - Yes, I have checked, and there is no already established alternative or other centrally provided tool for this case yet.
+    Examples:
+      | label                                           |
+      | Behandlungsaufklärung erfolgte                  |
+      | Behandlungsvertrag abgeschlossen                |
+      | Datenschutzerklärung unterzeichnet              |
 
-3. **Is the requested Service Account solely used for Jira or Confluence or both?**
-   - The requested Service Account is solely used for Jira.
+  @step_definitions
+  Given('I am on the additional information section', () => {
+    // code to navigate to the additional information section
+  });
 
-4. **Do you only need token-based authentication from your connected service? (Using Personal Access Tokens in Jira/Confluence)**
-   - Yes, token-based authentication using Personal Access Tokens in Jira is required.
+  Then('I should see the checkbox for {string}', (label) => {
+    // code to check if the checkbox with the given label is displayed
+  });
 
-5. **Who can we contact as a responsible for this service account?**
-   - The responsible contact for this service account is [Your Name] (or your designated contact person).
+  Then('the checkbox for {string} is unchecked', (label) => {
+    // code to check if the checkbox with the given label is unchecked
+  });
 
-6. **Which service or product will the account be used for? (This is either the name of the CGM product or of a GroupIT Service)**
-   - The account will be used for the EOS - Eden project, specifically for pushing automated test results into Jira Zephyr.
+  Then('the date field next to {string} is displayed and disabled', (label) => {
+    // code to check if the date field next to the given label is displayed and disabled
+  });
 
-7. **As basic authentication (username/password) will be disabled to the REST API we would need a workaround**
-   - Token-based authentication will be used as the workaround for the REST API, adhering to the security policies and guidelines.
-
-Make sure to fill in the designated fields with the specific names and contact information relevant to your request.
+  Then('the text field next to {string} is displayed and disabled', (label) => {
+    // code to check if the text field next to the given label is displayed and disabled
+  });

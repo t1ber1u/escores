@@ -1,15 +1,46 @@
-import dotenv from 'dotenv';
+import EnvHelper from './EnvHelper';
+import moment from 'moment-timezone';
+import TOTP from 'totp-generator';
 
-dotenv.config();
+class CGM_ID {
+  username: string;
+  password: string;
+  secret: string;
+  period: number;
+  timezone: string;
 
-class EnvHelper {
-  static getEnvVariable(key: string): string {
-    const value = process.env[key];
-    if (!value) {
-      throw new Error(`Environment variable ${key} is not set or has no value.`);
+  constructor() {
+    this.username = EnvHelper.getEnvVariable('CGM_ID_USERNAME');
+    this.password = EnvHelper.getEnvVariable('CGM_ID_PASSWORD');
+    this.secret = EnvHelper.getEnvVariable('CGM_ID_SECRET');
+    this.period = parseInt(EnvHelper.getEnvVariable('CGM_ID_PERIOD'), 10);
+    this.timezone = EnvHelper.getEnvVariable('CGM_ID_TIMEZONE');
+  }
+
+  getCurrentTime(): number {
+    const currentTime = moment();
+    const currentTimezone = moment.tz.guess();
+    console.log(`Found Timezone: ${currentTimezone}`);
+    console.log(`Found Local Time: ${currentTime.format('HH:mm:ss')}`);
+
+    if (currentTimezone === this.timezone) {
+      console.log(`Timezone ${this.timezone} with time in ${this.timezone}: ${currentTime.format('HH:mm:ss')}`);
+      return currentTime.valueOf(); // Current time in milliseconds in the given timezone
+    } else {
+      const adjustedTime = currentTime.tz(this.timezone);
+      console.log(`Setting Timezone ${this.timezone} with time: ${adjustedTime.format('HH:mm:ss')}`);
+      return adjustedTime.valueOf(); // Adjusted time in milliseconds in the given timezone
     }
-    return value;
+  }
+
+  generateTOTP(): string {
+    const timestamp = this.getCurrentTime();
+    return TOTP.generate(this.secret, { 
+      algorithm: 'SHA-1', 
+      timestamp: timestamp, 
+      period: this.period 
+    });
   }
 }
 
-export default EnvHelper;
+export default CGM_ID;

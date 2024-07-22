@@ -1,81 +1,15 @@
-CGM_ID_USER=yourUsername
-CGM_ID_PASSWORD=yourPassword
-
-import { defineConfig } from 'webdriverio';
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
-export const config = defineConfig({
-  runner: 'local',
-  framework: 'cucumber',
-  cucumberOpts: {
-    require: ['./path/to/step_definitions/**/*.ts', './path/to/hooks.ts'], // Update the path as necessary
-    backtrace: false,
-    requireModule: [],
-    dryRun: false,
-    failFast: false,
-    format: ['pretty'],
-    colors: true,
-    snippets: true,
-    source: true,
-    profile: [],
-    strict: false,
-    tagExpression: '',
-    timeout: 60000,
-    ignoreUndefinedDefinitions: false,
-  },
-  specs: ['./path/to/feature_files/**/*.feature'], // Update the path as necessary
-  capabilities: [{
-    maxInstances: 1,
-    browserName: 'chrome',
-    'goog:chromeOptions': {
-      args: ['--headless', '--disable-gpu'],
-    },
-  }],
-  services: ['selenium-standalone'],
-  reporters: ['spec'],
-});
-
-import { Given, When, Then } from '@cucumber/cucumber';
-import { browser } from 'webdriverio';
-
-const cgmIdUser = process.env.CGM_ID_USER;
-const cgmIdPassword = process.env.CGM_ID_PASSWORD;
-
-if (!cgmIdUser || !cgmIdPassword) {
-  throw new Error('CGM_ID_USER or CGM_ID_PASSWORD is not set in environment variables');
+class EnvHelper {
+  static getEnvVariable(key: string): string {
+    const value = process.env[key];
+    if (!value) {
+      throw new Error(`Environment variable ${key} is not set or has no value.`);
+    }
+    return value;
+  }
 }
 
-Given('I am on the main page', async () => {
-  await browser.url('https://your-main-page-url.com');
-});
-
-When('I log in with credentials', async () => {
-  await $('//input[@placeholder="Email address"]').setValue(cgmIdUser);
-  await $(`//button[contains(., 'Continue')]`).click();
-  await $('//input[@placeholder="Password"]').setValue(cgmIdPassword);
-  await $(`//button[contains(., 'Log in')]`).click();
-});
-
-Then('I should be successfully authenticated and see the main page', async () => {
-  const isMainPageVisible = await $('#main-page-identifier').isDisplayed(); // Replace with your actual main page identifier
-  expect(isMainPageVisible).toBe(true);
-});
-
-image: node:14
-
-stages:
-  - test
-
-before_script:
-  - npm install
-
-test:
-  stage: test
-  script:
-    - npm test
-  variables:
-    CGM_ID_USER: $CGM_ID_USER
-    CGM_ID_PASSWORD: $CGM_ID_PASSWORD
+export default EnvHelper;

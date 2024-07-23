@@ -1,46 +1,20 @@
-import EnvHelper from './EnvHelper';
-import moment from 'moment-timezone';
-import TOTP from 'totp-generator';
+Sure, here's a formulation for your question to the architect:
 
-class CGM_ID {
-  username: string;
-  password: string;
-  secret: string;
-  period: number;
-  timezone: string;
+---
 
-  constructor() {
-    this.username = EnvHelper.getEnvVariable('CGM_ID_USERNAME');
-    this.password = EnvHelper.getEnvVariable('CGM_ID_PASSWORD');
-    this.secret = EnvHelper.getEnvVariable('CGM_ID_SECRET');
-    this.period = parseInt(EnvHelper.getEnvVariable('CGM_ID_PERIOD'), 10);
-    this.timezone = EnvHelper.getEnvVariable('CGM_ID_TIMEZONE');
-  }
+Hi [Architect's Name],
 
-  getCurrentTime(): number {
-    const currentTime = moment();
-    const currentTimezone = moment.tz.guess();
-    console.log(`Found Timezone: ${currentTimezone}`);
-    console.log(`Found Local Time: ${currentTime.format('HH:mm:ss')}`);
+I hope you're doing well. Our automated tests for TOTP authentication are currently failing when we run them in parallel. It seems that the tests are unable to authenticate with the TAN (Time-based One-Time Password). 
 
-    if (currentTimezone === this.timezone) {
-      console.log(`Timezone ${this.timezone} with time in ${this.timezone}: ${currentTime.format('HH:mm:ss')}`);
-      return currentTime.valueOf(); // Current time in milliseconds in the given timezone
-    } else {
-      const adjustedTime = currentTime.tz(this.timezone);
-      console.log(`Setting Timezone ${this.timezone} with time: ${adjustedTime.format('HH:mm:ss')}`);
-      return adjustedTime.valueOf(); // Adjusted time in milliseconds in the given timezone
-    }
-  }
+Could you please let us know if there have been any recent changes or security enhancements pushed to the CGM authentication solution that could be affecting this? Specifically, we're wondering if any new security enforcement has been introduced that might impact parallel authentication attempts.
 
-  generateTOTP(): string {
-    const timestamp = this.getCurrentTime();
-    return TOTP.generate(this.secret, { 
-      algorithm: 'SHA-1', 
-      timestamp: timestamp, 
-      period: this.period 
-    });
-  }
-}
+Any insights you could provide would be greatly appreciated.
 
-export default CGM_ID;
+Thank you!
+
+Best regards,
+[Your Name]
+
+---
+
+Feel free to adjust as needed!

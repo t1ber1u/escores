@@ -1,20 +1,97 @@
-import dotenv from 'dotenv';
+import { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio';
+import { config } from '../wdio.conf';
 
-dotenv.config();
+export default class BrowserWrapper {
+  public browser: WebdriverIO.Browser;
+  constructor(browser: WebdriverIO.Browser) {
+    this.browser = browser;
+  }
 
-class EnvHelper {
-  static getEnvVariable(key: string, defaultValue?: string): string {
-    const value = process.env[key];
-    if (!value) {
-      if (defaultValue !== undefined) {
-        console.warn(`Warning: Environment variable ${key} is not set or has no value. Using default value: ${defaultValue}`);
-        return defaultValue;
-      } else {
-        throw new Error(`Environment variable ${key} is not set and no default value is provided.`);
+  async goToURL(url: string, selector?: string): Promise<void> {
+    await this.browser.url(url);
+    if (selector) {
+      await this.browser.$(selector).waitForDisplayed();
+    }
+  }
+
+  async clickElement(element: ChainablePromiseElement<WebdriverIO.Element>) {
+    await element.waitForClickable();
+    await element.click();
+  }
+
+  async setElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
+    await element.waitForDisplayed();
+    await element.setValue(text);
+  }
+
+  async addElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
+    await element.waitForDisplayed();
+    await element.addValue(text);
+  }
+
+  async getElementsText(elements: ChainablePromiseArray<WebdriverIO.ElementArray>) {
+    const textArray: string[] = [];
+    for (const element of await elements) {
+      await element.waitForDisplayed();
+      textArray.push(await element.getText());
+    }
+    return textArray;
+  }
+
+  async getElementAttribute(element: ChainablePromiseElement<WebdriverIO.Element>, attribute: string) {
+    await element.waitForDisplayed();
+    return await element.getAttribute(attribute);
+  }
+
+  async waitForDisplayed(selector: string): Promise<WebdriverIO.Element> {
+    await this.browser.$(selector).waitForDisplayed();
+    const element = await this.browser.$(selector);
+    if (!element) {
+      throw new Error(`Element with selector ${selector} not found.`);
+    }
+    return element;
+  }
+
+  async waitForElement(selector: string, retries = 5, timeout = 3000): Promise<WebdriverIO.Element> {
+    let attempts = 0;
+    while (attempts < retries) {
+      try {
+        const element = await this.browser.$(selector);
+        await element.waitForExist({ timeout });
+        return element;
+      } catch (error) {
+        attempts++;
+        if (attempts >= retries) {
+          throw error;
+        }
       }
     }
-    return value;
+  }
+
+  // Cookie handling methods
+  async getCookies(names?: string[]): Promise<WebDriver.Cookie[]> {
+    return await this.browser.getCookies(names);
+  }
+
+  async setCookies(cookie: WebDriver.Cookie | WebDriver.Cookie[]): Promise<void> {
+    if (Array.isArray(cookie)) {
+      for (const c of cookie) {
+        await this.browser.setCookies(c);
+      }
+    } else {
+      await this.browser.setCookies(cookie);
+    }
+  }
+
+  async deleteCookies(names?: string | string[]): Promise<void> {
+    if (Array.isArray(names)) {
+      for (const name of names) {
+        await this.browser.deleteCookies(name);
+      }
+    } else if (typeof names === 'string') {
+      await this.browser.deleteCookies(names);
+    } else {
+      await this.browser.deleteAllCookies();
+    }
   }
 }
-
-export default EnvHelper;

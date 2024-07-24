@@ -1,70 +1,20 @@
-import EnvHelper from './EnvHelper';
-import moment from 'moment-timezone';
-import TOTP from 'totp-generator';
+import dotenv from 'dotenv';
 
-class CGM_ID {
-  username: string;
-  password: string;
-  secret: string;
-  period: number;
-  timezone: string;
+dotenv.config();
 
-  constructor() {
-    this.username = EnvHelper.getEnvVariable('CGM_ID_USERNAME');
-    this.password = EnvHelper.getEnvVariable('CGM_ID_PASSWORD');
-    this.secret = EnvHelper.getEnvVariable('CGM_ID_SECRET');
-    this.period = parseInt(EnvHelper.getEnvVariable('CGM_ID_PERIOD') || '60', 10); // Default to 60 seconds
-    this.timezone = EnvHelper.getEnvVariable('CGM_ID_TIMEZONE') || 'Europe/Bucharest'; // Default to 'Europe/Bucharest'
-
-    // Validate the secret key
-    if (!this.isValidBase32Key(this.secret)) {
-      throw new Error('Invalid Base32 secret key. Please check the CGM_ID_SECRET environment variable.');
-    }
-  }
-
-  isValidBase32Key(key: string): boolean {
-    const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-
-    if (!key) {
-      console.error('Validation Error: The provided key is empty or undefined.');
-      return false;
-    }
-
-    for (const char of key.toUpperCase()) {
-      if (!base32Chars.includes(char)) {
-        console.error(`Validation Error: Invalid character '${char}' in Base32 key.`);
-        return false;
+class EnvHelper {
+  static getEnvVariable(key: string, defaultValue?: string): string {
+    const value = process.env[key];
+    if (!value) {
+      if (defaultValue !== undefined) {
+        console.warn(`Warning: Environment variable ${key} is not set or has no value. Using default value: ${defaultValue}`);
+        return defaultValue;
+      } else {
+        throw new Error(`Environment variable ${key} is not set and no default value is provided.`);
       }
     }
-
-    console.log('Validation Success: The provided Base32 key is valid.');
-    return true;
-  }
-
-  getCurrentTime(): number {
-    const currentTime = moment();
-    const currentTimezone = moment.tz.guess();
-    console.log(`Found Local Timezone: ${currentTimezone}`);
-    console.log(`Found Local Time: ${currentTime.format('HH:mm:ss')}`);
-
-    if (currentTimezone === this.timezone) {
-      console.log(`Timezone ${this.timezone} with time: ${currentTime.format('HH:mm:ss')}`);
-      return currentTime.valueOf(); // Current time in milliseconds in the given timezone
-    } else {
-      const adjustedTime = currentTime.tz(this.timezone);
-      console.log(`Setting CGM ID User Timezone ${this.timezone} with time: ${adjustedTime.format('HH:mm:ss')}`);
-      return adjustedTime.valueOf(); // Adjusted time in milliseconds in the given timezone
-    }
-  }
-
-  generateTOTP(): string {
-    const timestamp = this.getCurrentTime();
-    return TOTP.generate(this.secret, { 
-      algorithm: 'SHA-1', 
-      timestamp: timestamp, 
-      period: this.period 
-    });
+    return value;
   }
 }
 
-export default CGM_ID;
+export default EnvHelper;

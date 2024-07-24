@@ -1,6 +1,17 @@
 import { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio';
 import { config } from '../wdio.conf';
 
+interface CustomCookie {
+  name: string;
+  value: string;
+  domain?: string;
+  path?: string;
+  expiry?: number;
+  sameSite?: 'Lax' | 'Strict' | 'None';
+  secure?: boolean;
+  httpOnly?: boolean;
+}
+
 export default class BrowserWrapper {
   public browser: WebdriverIO.Browser;
   constructor(browser: WebdriverIO.Browser) {
@@ -64,16 +75,18 @@ export default class BrowserWrapper {
         if (attempts >= retries) {
           throw error;
         }
+        await this.browser.pause(1000); // Wait for 1 second before retrying
       }
     }
+    throw new Error(`Element with selector ${selector} not found after ${retries} attempts`);
   }
 
   // Cookie handling methods
-  async getCookies(names?: string[]): Promise<WebDriver.Cookie[]> {
-    return await this.browser.getCookies(names);
+  async getCookies(names?: string[]): Promise<CustomCookie[]> {
+    return await this.browser.getCookies(names) as CustomCookie[];
   }
 
-  async setCookies(cookie: WebDriver.Cookie | WebDriver.Cookie[]): Promise<void> {
+  async setCookies(cookie: CustomCookie | CustomCookie[]): Promise<void> {
     if (Array.isArray(cookie)) {
       for (const c of cookie) {
         await this.browser.setCookies(c);

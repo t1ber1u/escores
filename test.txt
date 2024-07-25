@@ -1,5 +1,6 @@
 import { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio';
 import { config } from '../wdio.conf';
+import { saveCookies, loadCookies, deleteCookiesFile } from './cookieUtils';
 
 interface CustomCookie {
   name: string;
@@ -97,14 +98,19 @@ export default class BrowserWrapper {
   }
 
   async deleteCookies(names?: string | string[]): Promise<void> {
-    if (Array.isArray(names)) {
-      for (const name of names) {
-        await this.browser.deleteCookies(name);
-      }
-    } else if (typeof names === 'string') {
-      await this.browser.deleteCookies(names);
-    } else {
-      await this.browser.deleteAllCookies();
-    }
+    await this.browser.deleteCookies(names);
+  }
+
+  // Save and load cookies
+  async saveSessionCookies() {
+    await saveCookies(this.browser);
+  }
+
+  async loadSessionCookies() {
+    await loadCookies(this.browser);
+  }
+
+  async deleteSessionCookiesFile() {
+    deleteCookiesFile();
   }
 }

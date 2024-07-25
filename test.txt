@@ -1,116 +1,22 @@
-import { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio';
-import { config } from '../wdio.conf';
-import { saveCookies, loadCookies, deleteCookiesFile } from './cookieUtils';
+import fs from 'fs';
+import path from 'path';
 
-interface CustomCookie {
-  name: string;
-  value: string;
-  domain?: string;
-  path?: string;
-  expiry?: number;
-  sameSite?: 'Lax' | 'Strict' | 'None';
-  secure?: boolean;
-  httpOnly?: boolean;
-}
+const cookiesFilePath = path.join(__dirname, 'cookies.json');
 
-export default class BrowserWrapper {
-  public browser: WebdriverIO.Browser;
-  constructor(browser: WebdriverIO.Browser) {
-    this.browser = browser;
+export const saveCookies = async (browser: WebdriverIO.Browser) => {
+  const cookies = await browser.getCookies();
+  fs.writeFileSync(cookiesFilePath, JSON.stringify(cookies));
+};
+
+export const loadCookies = async (browser: WebdriverIO.Browser) => {
+  if (fs.existsSync(cookiesFilePath)) {
+    const cookies = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf8'));
+    await browser.setCookies(cookies);
   }
+};
 
-  async goToURL(url: string, selector?: string): Promise<void> {
-    await this.browser.url(url);
-    if (selector) {
-      await this.browser.$(selector).waitForDisplayed();
-    }
+export const deleteCookiesFile = () => {
+  if (fs.existsSync(cookiesFilePath)) {
+    fs.unlinkSync(cookiesFilePath);
   }
-
-  async clickElement(element: ChainablePromiseElement<WebdriverIO.Element>) {
-    await element.waitForClickable();
-    await element.click();
-  }
-
-  async setElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
-    await element.waitForDisplayed();
-    await element.setValue(text);
-  }
-
-  async addElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
-    await element.waitForDisplayed();
-    await element.addValue(text);
-  }
-
-  async getElementsText(elements: ChainablePromiseArray<WebdriverIO.ElementArray>) {
-    const textArray: string[] = [];
-    for (const element of await elements) {
-      await element.waitForDisplayed();
-      textArray.push(await element.getText());
-    }
-    return textArray;
-  }
-
-  async getElementAttribute(element: ChainablePromiseElement<WebdriverIO.Element>, attribute: string) {
-    await element.waitForDisplayed();
-    return await element.getAttribute(attribute);
-  }
-
-  async waitForDisplayed(selector: string): Promise<WebdriverIO.Element> {
-    await this.browser.$(selector).waitForDisplayed();
-    const element = await this.browser.$(selector);
-    if (!element) {
-      throw new Error(`Element with selector ${selector} not found.`);
-    }
-    return element;
-  }
-
-  async waitForElement(selector: string, retries = 5, timeout = 3000): Promise<WebdriverIO.Element> {
-    let attempts = 0;
-    while (attempts < retries) {
-      try {
-        const element = await this.browser.$(selector);
-        await element.waitForExist({ timeout });
-        return element;
-      } catch (error) {
-        attempts++;
-        if (attempts >= retries) {
-          throw error;
-        }
-        await this.browser.pause(1000); // Wait for 1 second before retrying
-      }
-    }
-    throw new Error(`Element with selector ${selector} not found after ${retries} attempts`);
-  }
-
-  // Cookie handling methods
-  async getCookies(names?: string[]): Promise<CustomCookie[]> {
-    return await this.browser.getCookies(names) as CustomCookie[];
-  }
-
-  async setCookies(cookie: CustomCookie | CustomCookie[]): Promise<void> {
-    if (Array.isArray(cookie)) {
-      for (const c of cookie) {
-        await this.browser.setCookies(c);
-      }
-    } else {
-      await this.browser.setCookies(cookie);
-    }
-  }
-
-  async deleteCookies(names?: string | string[]): Promise<void> {
-    await this.browser.deleteCookies(names);
-  }
-
-  // Save and load cookies
-  async saveSessionCookies() {
-    await saveCookies(this.browser);
-  }
-
-  async loadSessionCookies() {
-    await loadCookies(this.browser);
-  }
-
-  async deleteSessionCookiesFile() {
-    deleteCookiesFile();
-  }
-}
+};

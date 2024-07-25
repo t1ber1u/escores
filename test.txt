@@ -1,134 +1,41 @@
-import { ChainablePromiseArray, ChainablePromiseElement } from 'webdriverio';
-import { config } from '../wdio.conf';
-import fs from 'fs';
-import path from 'path';
+import { Before, After, AfterAll } from '@wdio/cucumber-framework';
+import cucumberJson from 'wdio-cucumberjs-json-reporter';
+import { browser } from '@wdio/globals';
+import BrowserWrapper from '../support/browserWrapper';
 
-interface CustomCookie {
-  name: string;
-  value: string;
-  domain?: string;
-  path?: string;
-  expiry?: number;
-  sameSite?: 'Lax' | 'Strict' | 'None';
-  secure?: boolean;
-  httpOnly?: boolean;
-}
+let browserWrapper: BrowserWrapper;
+let executedUIScenarios = false;
 
-export default class BrowserWrapper {
-  public browser: WebdriverIO.Browser;
-  private cookiesFilePath: string;
+Before(async (scenario) => {
+  browserWrapper = new BrowserWrapper(browser);
 
-  constructor(browser: WebdriverIO.Browser) {
-    this.browser = browser;
-    this.cookiesFilePath = path.join(__dirname, 'cookies.json');
+  // Check if the scenario has the @ui tag
+  const tags = scenario.pickle.tags.map(tag => tag.name);
+  if (tags.includes('@ui')) {
+    executedUIScenarios = true;
+    await browserWrapper.loadSessionCookies();
+    await browserWrapper.goToURL('https://example.com');
   }
+});
 
-  async goToURL(url: string, selector?: string): Promise<void> {
-    await this.browser.url(url);
-    if (selector) {
-      await this.browser.$(selector).waitForDisplayed();
+After(async function (scenario) {
+  // Check if the scenario has the @ui tag
+  const tags = scenario.pickle.tags.map(tag => tag.name);
+  if (tags.includes('@ui')) {
+    if (scenario.result.status === 'FAILED') {
+      console.log('Expected test to pass but failed!');
+      // Take screenshot
+      const screenshot = await browser.takeScreenshot();
+      // Attach a screenshot in a before hook
+      cucumberJson.attach(screenshot, 'image/png');
     }
+    await browserWrapper.saveSessionCookies();
   }
+});
 
-  async clickElement(element: ChainablePromiseElement<WebdriverIO.Element>) {
-    await element.waitForClickable();
-    await element.click();
+// Separate hook to delete the cookies file after all tests have executed
+AfterAll(async () => {
+  if (executedUIScenarios) {
+    await browserWrapper.deleteSessionCookiesFile();
   }
-
-  async setElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
-    await element.waitForDisplayed();
-    await element.setValue(text);
-  }
-
-  async addElementValue(element: ChainablePromiseElement<WebdriverIO.Element>, text: string) {
-    await element.waitForDisplayed();
-    await element.addValue(text);
-  }
-
-  async getElementsText(elements: ChainablePromiseArray<WebdriverIO.ElementArray>) {
-    const textArray: string[] = [];
-    for (const element of await elements) {
-      await element.waitForDisplayed();
-      textArray.push(await element.getText());
-    }
-    return textArray;
-  }
-
-  async getElementAttribute(element: ChainablePromiseElement<WebdriverIO.Element>, attribute: string) {
-    await element.waitForDisplayed();
-    return await element.getAttribute(attribute);
-  }
-
-  async waitForDisplayed(selector: string): Promise<WebdriverIO.Element> {
-    await this.browser.$(selector).waitForDisplayed();
-    const element = await this.browser.$(selector);
-    if (!element) {
-      throw new Error(`Element with selector ${selector} not found.`);
-    }
-    return element;
-  }
-
-  async waitForElement(selector: string, retries = 5, timeout = 3000): Promise<WebdriverIO.Element> {
-    let attempts = 0;
-    while (attempts < retries) {
-      try {
-        const element = await this.browser.$(selector);
-        await element.waitForExist({ timeout });
-        return element;
-      } catch (error) {
-        attempts++;
-        if (attempts >= retries) {
-          throw error;
-        }
-        await this.browser.pause(1000); // Wait for 1 second before retrying
-      }
-    }
-    throw new Error(`Element with selector ${selector} not found after ${retries} attempts`);
-  }
-
-  // Cookie handling methods
-  async getCookies(names?: string[]): Promise<CustomCookie[]> {
-    return await this.browser.getCookies(names) as CustomCookie[];
-  }
-
-  async setCookies(cookie: CustomCookie | CustomCookie[]): Promise<void> {
-    if (Array.isArray(cookie)) {
-      for (const c of cookie) {
-        await this.browser.setCookies(c);
-      }
-    } else {
-      await this.browser.setCookies(cookie);
-    }
-  }
-
-  async deleteCookies(names?: string | string[]): Promise<void> {
-    if (Array.isArray(names)) {
-      for (const name of names) {
-        await this.browser.deleteCookies(name);
-      }
-    } else if (typeof names === 'string') {
-      await this.browser.deleteCookies(names);
-    } else {
-      await this.browser.deleteAllCookies();
-    }
-  }
-
-  // Save and load cookies
-  async saveSessionCookies() {
-    const cookies = await this.browser.getCookies();
-    fs.writeFileSync(this.cookiesFilePath, JSON.stringify(cookies));
-  }
-
-  async loadSessionCookies() {
-    if (fs.existsSync(this.cookiesFilePath)) {
-      const cookies = JSON.parse(fs.readFileSync(this.cookiesFilePath, 'utf8'));
-      await this.browser.setCookies(cookies);
-    }
-  }
-
-  async deleteSessionCookiesFile() {
-    if (fs.existsSync(this.cookiesFilePath)) {
-      fs.unlinkSync(this.cookiesFilePath);
-    }
-  }
-}
+});

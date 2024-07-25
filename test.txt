@@ -1,41 +1,43 @@
-import { Before, After, AfterAll } from '@wdio/cucumber-framework';
-import cucumberJson from 'wdio-cucumberjs-json-reporter';
-import { browser } from '@wdio/globals';
-import BrowserWrapper from '../support/browserWrapper';
+# Automation Solution Updates
 
-let browserWrapper: BrowserWrapper;
-let executedUIScenarios = false;
+## Major Refactoring and Enhancements
 
-Before(async (scenario) => {
-  browserWrapper = new BrowserWrapper(browser);
+### CGM ID Authentication
 
-  // Check if the scenario has the @ui tag
-  const tags = scenario.pickle.tags.map(tag => tag.name);
-  if (tags.includes('@ui')) {
-    executedUIScenarios = true;
-    await browserWrapper.loadSessionCookies();
-    await browserWrapper.goToURL('https://example.com');
-  }
-});
+- **Consistent Authentication**: The automation solution now includes CGM ID authentication consistent across all teams.
+- **Specialized Class**: A specialized class `CGM_ID` has been created to handle all CGM authentication tasks.
+- **Environment Variables**: 
+  - **Local**: The `.env` file is used to keep authentication details secret in environment variables. These variables are picked up at runtime and used for authentication.
+  - **CI**: Masked variables have been introduced to ensure authentication details are not visible in logs but are used at the code level. These variables can be changed on demand depending on the team (`@magna`, `@unity`, `@nexus`).
 
-After(async function (scenario) {
-  // Check if the scenario has the @ui tag
-  const tags = scenario.pickle.tags.map(tag => tag.name);
-  if (tags.includes('@ui')) {
-    if (scenario.result.status === 'FAILED') {
-      console.log('Expected test to pass but failed!');
-      // Take screenshot
-      const screenshot = await browser.takeScreenshot();
-      // Attach a screenshot in a before hook
-      cucumberJson.attach(screenshot, 'image/png');
-    }
-    await browserWrapper.saveSessionCookies();
-  }
-});
+### Environment Variables and Configuration
 
-// Separate hook to delete the cookies file after all tests have executed
-AfterAll(async () => {
-  if (executedUIScenarios) {
-    await browserWrapper.deleteSessionCookiesFile();
-  }
-});
+- **Local and CI Customization**:
+  - **Default and Custom Values**: Default environment variables are provided, but custom values can be added both locally and in CI. If no custom values are added during the CI build run, the default ones will be used.
+  - **Multi-Environment Testing**: The URL used for running tests has a default value but can be overridden by custom values added locally or in CI. This enables running tests against multiple environments.
+
+### Tag-Based Filtering
+
+- **Tag-Based Hooks**:
+  - **UI Tag**: Specific actions are executed for scenarios tagged with `@ui`. For example, taking screenshots if a UI scenario fails.
+  - **API Tag**: Scenarios tagged with `@api` do not execute UI-specific actions, such as taking screenshots, as these are not needed for API tests.
+
+### Helpers and Utilities
+
+- **Environment Variable Helper**: An `EnvHelper` class has been added in the support folder to manage environment variables effectively.
+- **Cookie Management**: Cookie helper functions have been added to the `BrowserWrapper` class. These include functions to save, load, and delete cookies.
+
+## Summary of Changes
+
+1. **Consistent CGM ID Authentication Across Teams**: Implemented consistent authentication for all teams using CGM ID.
+2. **Specialized `CGM_ID` Class**: Created a class to handle all authentication tasks related to CGM ID.
+3. **Environment Variable Management**:
+   - `.env` file usage for local environment variables.
+   - Masked variables in CI for secure authentication.
+   - Default and custom environment variables for multi-environment testing.
+4. **Tag-Based Filtering for Hooks**: Enabled tag-based filtering to execute specific actions for different types of tests (UI vs. API).
+5. **Helper Functions**:
+   - `EnvHelper` class for managing environment variables.
+   - Cookie management functions in `BrowserWrapper`.
+
+These updates ensure that the automation solution is robust, secure, and flexible, enabling efficient testing across different environments and teams.

@@ -1,43 +1,14 @@
-# Automation Solution Updates
+Here are the reasons you can use as a QA engineer to explain why you don't need to test this:
 
-## Major Refactoring and Enhancements
+---
 
-### CGM ID Authentication
+As a QA engineer, I believe there is no need to test this change for the following reasons:
 
-- **Consistent Authentication**: The automation solution now includes CGM ID authentication consistent across all teams.
-- **Specialized Class**: A specialized class `CGM_ID` has been created to handle all CGM authentication tasks.
-- **Environment Variables**: 
-  - **Local**: The `.env` file is used to keep authentication details secret in environment variables. These variables are picked up at runtime and used for authentication.
-  - **CI**: Masked variables have been introduced to ensure authentication details are not visible in logs but are used at the code level. These variables can be changed on demand depending on the team (`@magna`, `@unity`, `@nexus`).
+1. **No New Productive Code**: The update includes only an additional "test" for developers without any changes to the existing productive code.
+2. **Developer Use**: The test is intended for developer convenience to check a physically USB connected mobile CT and is not part of the end-user functionality.
+3. **Manual Verification Possible**: Developers can manually verify the functionality without the need for QA intervention, ensuring the test environment setup is correct.
+4. **No Impact on Existing Functionality**: The new test does not impact existing features or functionalities, so it does not require regression testing.
 
-### Environment Variables and Configuration
+---
 
-- **Local and CI Customization**:
-  - **Default and Custom Values**: Default environment variables are provided, but custom values can be added both locally and in CI. If no custom values are added during the CI build run, the default ones will be used.
-  - **Multi-Environment Testing**: The URL used for running tests has a default value but can be overridden by custom values added locally or in CI. This enables running tests against multiple environments.
-
-### Tag-Based Filtering
-
-- **Tag-Based Hooks**:
-  - **UI Tag**: Specific actions are executed for scenarios tagged with `@ui`. For example, taking screenshots if a UI scenario fails.
-  - **API Tag**: Scenarios tagged with `@api` do not execute UI-specific actions, such as taking screenshots, as these are not needed for API tests.
-
-### Helpers and Utilities
-
-- **Environment Variable Helper**: An `EnvHelper` class has been added in the support folder to manage environment variables effectively.
-- **Cookie Management**: Cookie helper functions have been added to the `BrowserWrapper` class. These include functions to save, load, and delete cookies.
-
-## Summary of Changes
-
-1. **Consistent CGM ID Authentication Across Teams**: Implemented consistent authentication for all teams using CGM ID.
-2. **Specialized `CGM_ID` Class**: Created a class to handle all authentication tasks related to CGM ID.
-3. **Environment Variable Management**:
-   - `.env` file usage for local environment variables.
-   - Masked variables in CI for secure authentication.
-   - Default and custom environment variables for multi-environment testing.
-4. **Tag-Based Filtering for Hooks**: Enabled tag-based filtering to execute specific actions for different types of tests (UI vs. API).
-5. **Helper Functions**:
-   - `EnvHelper` class for managing environment variables.
-   - Cookie management functions in `BrowserWrapper`.
-
-These updates ensure that the automation solution is robust, secure, and flexible, enabling efficient testing across different environments and teams.
+You can add this comment to the activity section in your project's task management tool.

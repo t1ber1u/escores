@@ -1,14 +1,10 @@
-Here are the reasons you can use as a QA engineer to explain why you don't need to test this:
+Here's a suggested response:
 
 ---
 
-As a QA engineer, I believe there is no need to test this change for the following reasons:
+Hi Artem,
 
-1. **No New Productive Code**: The update includes only an additional "test" for developers without any changes to the existing productive code.
-2. **Developer Use**: The test is intended for developer convenience to check a physically USB connected mobile CT and is not part of the end-user functionality.
-3. **Manual Verification Possible**: Developers can manually verify the functionality without the need for QA intervention, ensuring the test environment setup is correct.
-4. **No Impact on Existing Functionality**: The new test does not impact existing features or functionalities, so it does not require regression testing.
+I do have auto-formatting enabled through Prettier in my VSCode setup. However, the formatting issues you're seeing may have occurred after resolving a merge conflict. Sometimes, automatic formatting doesn't trigger during conflict resolution, so I'll make sure to manually format the code after resolving conflicts in the future to maintain consistency. Thanks for pointing this out!
 
----
-
-You can add this comment to the activity section in your project's task management tool.
+Best,  
+[Tiberiu Chiriac]

@@ -1,3 +1,20 @@
+To address the code review comment and update the code as suggested, you can use rest parameters in your methods to simplify handling multiple arguments. Here's how you can update the code based on the provided images:
+
+### Suggested Response for the Code Review
+---
+
+Hi Artem,
+
+Thanks for the suggestion. I'll update the methods to use rest parameters to handle the arguments more flexibly. This will streamline the code and ensure consistent handling regardless of the number of arguments. I'll make the changes and push the updates shortly.
+
+Best,  
+[Tiberiu Chiriac]
+
+### Updated Code for `browserWrapper.ts`
+
+Based on the suggestion and the provided images, the updated code should look like this:
+
+```typescript
 // Cookie handling methods
 async getCookies(...names: string[]): Promise<CustomCookie[]> {
   return await this.browser.getCookies(names) as CustomCookie[];
@@ -39,3 +56,17 @@ async deleteSessionCookiesFile(): Promise<void> {
     console.log("Session cookies deleted.");
   }
 }
+```
+
+### Key Changes Made:
+1. **Rest Parameters (`...`)**:
+   - Updated `getCookies`, `setCookies`, and `deleteCookies` methods to use rest parameters, allowing them to accept a variable number of arguments.
+
+2. **Handling Multiple Cookies/Names**:
+   - `setCookies` now iterates over each cookie in the rest parameter.
+   - `deleteCookies` now deletes cookies based on the presence of arguments, with a fallback to delete all cookies if none are provided.
+
+3. **General Cleanup**:
+   - Removed individual handling for arrays and single arguments, as rest parameters naturally handle multiple arguments as arrays.
+
+These changes align with the suggestion to use rest parameters, simplifying the method interfaces and making the code more flexible and cleaner.

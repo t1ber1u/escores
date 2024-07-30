@@ -1,10 +1,41 @@
-Here's a suggested response:
+// Cookie handling methods
+async getCookies(...names: string[]): Promise<CustomCookie[]> {
+  return await this.browser.getCookies(names) as CustomCookie[];
+}
 
----
+async setCookies(...cookies: CustomCookie[]): Promise<void> {
+  for (const cookie of cookies) {
+    await this.browser.setCookies(cookie);
+  }
+}
 
-Hi Artem,
+async deleteCookies(...names: string[]): Promise<void> {
+  if (names.length > 0) {
+    for (const name of names) {
+      await this.browser.deleteCookies(name);
+    }
+  } else {
+    await this.browser.deleteAllCookies();
+  }
+}
 
-I do have auto-formatting enabled through Prettier in my VSCode setup. However, the formatting issues you're seeing may have occurred after resolving a merge conflict. Sometimes, automatic formatting doesn't trigger during conflict resolution, so I'll make sure to manually format the code after resolving conflicts in the future to maintain consistency. Thanks for pointing this out!
+// Save and load cookies
+async saveSessionCookies(): Promise<void> {
+  const cookies = await this.browser.getCookies();
+  fs.writeFileSync(this.cookiesFilePath, JSON.stringify(cookies));
+}
 
-Best,  
-[Tiberiu Chiriac]
+async loadSessionCookies(): Promise<void> {
+  if (fs.existsSync(this.cookiesFilePath)) {
+    const cookies = JSON.parse(fs.readFileSync(this.cookiesFilePath, 'utf8'));
+    await this.browser.setCookies(cookies);
+    console.log("Session cookies loaded.");
+  }
+}
+
+async deleteSessionCookiesFile(): Promise<void> {
+  if (fs.existsSync(this.cookiesFilePath)) {
+    fs.unlinkSync(this.cookiesFilePath);
+    console.log("Session cookies deleted.");
+  }
+}

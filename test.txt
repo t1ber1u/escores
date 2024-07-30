@@ -1,5 +1,10 @@
-Here's a concise response:
+Here's a suggested response:
 
 ---
 
-Given that TypeScript defaults to public for class members, I've kept the default for now. However, I'll update the code to explicitly define access modifiers for clarity and proper encapsulation.
+Hi Artem,
+
+This will be addressed in the future after the framework change. We're planning to implement a custom logging class based on Pino logger, which will include debug and info modes for running the tests. For now, I'll keep the `console.log` statements as placeholders for the future logger implementation.
+
+Best,  
+Tiberiu Chiriac

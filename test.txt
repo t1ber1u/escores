@@ -1,33 +1,20 @@
-Here's the updated message with the additional PS:
+Here's the revised response incorporating your points:
 
 ---
 
-Hi Team,
+Hi Artem,
 
-I've merged the latest changes into the develop branch, and I'd like to share some important updates and next steps:
+I appreciate your initiative in discussing the progress of e2e testing and the improvements in our QA processes. It's essential to address any challenges and work together to ensure a smoother workflow.
 
-1. **.env File Introduction**:
-   - We've introduced a `.env` file for managing environment variables, which will be used for local authentication. This file **should not be committed to Git** for security reasons. I'll share the format and details separately. It helps secure automation and allows different CGM IDs at the project level. Update the variables with your local values.
+I would like to clarify a few points regarding our team's efforts. Significant progress has been made on several fronts, including setting up the CI platform, implementing authentication, and other crucial features. However, any perceived delay or lack of progress might stem from the fact that certain management decisions have delayed the process, and the lack of manual QA support has prevented us from identifying blockers before starting automation. The gentleman's agreement regarding our workflow hasn't been fully upheld by the management.
 
-2. **CI Environment Variables**:
-   - For CI, masked variables have been added with default values (shared in the `.env` file). These can be overridden by adding the same variables with custom values during build runs. You can also schedule pipeline runs.
+Additionally, there have been unfortunate implementations with blockers introduced both by our development team and other teams, such as DevOps and other development teams. These issues have further complicated the progress.
 
-3. **Multi-Environment Testing**:
-   - The capability to run tests against multiple environments is now available. By default, the tests run against `dev1`. To run against another environment, update the `URL` key in the `.env` file for local runs. For CI, customize the job and set the `URL` env var to your desired value.
+With respect, I also wanted to inform you that I have decided to resign from my position. This decision is not easy, but I believe it is the right step for me at this time. I wish the team and the company all the best in their future endeavors.
 
-4. **Tag-Based Filtering & Helpers**:
-   - More details are available in the merge request description. This includes new tag-based filtering options and helper functions.
-
-5. **Cookie Management**:
-   - We've added cookie management functions, although they're not currently in use due to temporary session cookies. This might change later to use session cookies instead of TAN numbers.
-
-**PS**: The tests are failing today due to an unexpected change or bug. It seems the expected authentication username is not found at the header level anymore. If anyone has information on this, please send an update. Once we clarify the situation, we can take appropriate actions and either raise a bug or update the tests.
-
-If you have any questions or need further clarification, please don't hesitate to ask!
-
-Best,  
-Tiberiu Chiriac
+Best regards,  
+[Your Name]
 
 ---
 
-This PS section informs the team about the current issue and asks for any information or updates, keeping everyone in the loop and ready for next steps.
+Feel free to adjust the message as needed. This version includes a more explicit mention of the management decisions, the lack of manual QA support, and the issues caused by other teams.
